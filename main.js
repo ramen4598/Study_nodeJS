@@ -1,6 +1,6 @@
-let http = require("http");
-let fs = require("fs");
-let url = require("url");
+const http = require("http");
+const fs = require("fs");
+const url = require("url");
 
 function templateHTML(title, list, description){
   return `
@@ -40,11 +40,11 @@ function templateList(filelist){
   return list;
 }
 
-let app = http.createServer(function (request, response) {
-  let _url = request.url;
-  console.log(_url);
-  let queryData = url.parse(_url, true).query;
-  let pathname = url.parse(_url, true).pathname;
+const app = http.createServer(function (request, response) {
+  const _url = request.url;
+  // console.log(_url);
+  const queryData = url.parse(_url, true).query;
+  const pathname = url.parse(_url, true).pathname;
 
   if (pathname === "/") {
     if (queryData.id === undefined) {
