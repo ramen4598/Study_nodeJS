@@ -16,7 +16,7 @@ let app = http.createServer(function (request, response) {
         let list = '<ul>';
 	      let i = 0; 
         while(i < filelist.length){
-	      	list += `<li>${filelist[i]}</li>`;
+          list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
 	      	i++;
 	      }
 	      list += '</ul>';
@@ -51,7 +51,7 @@ let app = http.createServer(function (request, response) {
         let list = '<ul>';
 	      let i = 0; 
 	      while(i < filelist.length){
-	      	list += `<li>${filelist[i]}</li>`;
+          list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
 	      	i++;
 	      }
 	      list += '</ul>';
