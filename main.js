@@ -1,17 +1,17 @@
-var http = require("http");
-var fs = require("fs");
-var url = require("url");
+let http = require("http");
+let fs = require("fs");
+let url = require("url");
 
-var app = http.createServer(function (request, response) {
-  var _url = request.url;
+let app = http.createServer(function (request, response) {
+  let _url = request.url;
   console.log(_url);
-  var queryData = url.parse(_url, true).query;
-  var pathname = url.parse(_url, true).pathname;
+  let queryData = url.parse(_url, true).query;
+  let pathname = url.parse(_url, true).pathname;
 
   if (pathname === "/") {
     if (queryData.id === undefined) {
-      var title = "Welcome";
-      var description = "Hello Node.js";
+      let title = "Welcome";
+      let description = "Hello Node.js";
       fs.readdir('./data', function(err, filelist){
         let list = '<ul>';
 	      let i = 0; 
@@ -20,7 +20,7 @@ var app = http.createServer(function (request, response) {
 	      	i++;
 	      }
 	      list += '</ul>';
-        var template = `
+        let template = `
           <!DOCTYPE html>
           <html lang="en">
             <head>
@@ -56,8 +56,8 @@ var app = http.createServer(function (request, response) {
 	      }
 	      list += '</ul>';
         fs.readFile(`data/${queryData.id}`, "utf-8", function (err, description) {
-         var title = queryData.id;
-          var template = `
+         let title = queryData.id;
+          let template = `
                 <!DOCTYPE html>
                 <html lang="en">
                   <head>
@@ -88,13 +88,13 @@ var app = http.createServer(function (request, response) {
   } else {
     if (_url == "/style.css") {
       response.writeHead(200, { "Content-type": "text/css" });
-      var fileContents = fs.readFileSync("style.css", "utf-8");
+      let fileContents = fs.readFileSync("style.css", "utf-8");
       response.write(fileContents);
       response.end();
       // console.log("css 전송완료");
     } else if (_url == "/color.js") {
       response.writeHead(200, { "Content-type": "text/js" });
-      var fileContents = fs.readFileSync("color.js", "utf-8");
+      let fileContents = fs.readFileSync("color.js", "utf-8");
       response.write(fileContents);
       response.end();
       // console.log("js 전송완료");
