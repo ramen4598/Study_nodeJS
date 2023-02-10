@@ -31,6 +31,15 @@ function templateHTML(title, list, description){
   `;
 }
 
+function templateList(filelist){
+  let list = '<ul>';
+  for (let i=0; i<filelist.length; i++){
+    list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
+  }
+  list += '</ul>';
+  return list;
+}
+
 let app = http.createServer(function (request, response) {
   let _url = request.url;
   console.log(_url);
@@ -39,31 +48,19 @@ let app = http.createServer(function (request, response) {
 
   if (pathname === "/") {
     if (queryData.id === undefined) {
-      let title = "Welcome";
-      let description = "Hello Node.js";
       fs.readdir('./data', function(err, filelist){
-        let list = '<ul>';
-	      let i = 0; 
-        while(i < filelist.length){
-          list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
-	      	i++;
-	      }
-	      list += '</ul>';
+        let title = "Welcome";
+        let description = "Hello Node.js";
+        let list = templateList(filelist);
         template = templateHTML(title, list, description);
         response.writeHead(200);
         response.end(template);
       });
     } else {
       fs.readdir('./data', function(err, filelist){
-        let list = '<ul>';
-	      let i = 0; 
-	      while(i < filelist.length){
-          list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
-	      	i++;
-	      }
-	      list += '</ul>';
         fs.readFile(`data/${queryData.id}`, "utf-8", function (err, description) {
           let title = queryData.id;
+          let list = templateList(filelist);
           template = templateHTML(title, list, description);
           response.writeHead(200);
           response.end(template);
@@ -84,7 +81,6 @@ let app = http.createServer(function (request, response) {
     } else {
       response.writeHead(404);
       response.end("Not found");
-      // console.log("Not Found");
     }
   }
 });
