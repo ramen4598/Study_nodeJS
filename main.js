@@ -1,6 +1,7 @@
 const http = require("http");
 const fs = require("fs");
 const url = require("url");
+const qs = require('querystring');
 
 function templateHTML(title, list, description){
   return `
@@ -22,6 +23,7 @@ function templateHTML(title, list, description){
        <div id="grid">
         ${list}
         <div id="article">
+          <a href="/create">create</a>
           <h2>${title}</h2>
           ${description}
         </div>
@@ -67,6 +69,34 @@ const app = http.createServer(function (request, response) {
         });
       });
     }
+  } else if (pathname === '/create'){
+    fs.readdir('./data', function(err, filelist){
+      let title = "create";
+      let description = `
+        <form action="http://localhost:3000/create_process" method="post">
+	        <p><input type="text" name="title" placeholder="title"></p>
+	        <p>
+	        	<textarea name="description" placeholder="description"></textarea>
+	        </p>
+	        <p>
+	        	<input type="submit">
+	        </p>
+        </form>
+      `;
+      let list = templateList(filelist);
+      template = templateHTML(title, list, description);
+      response.writeHead(200);
+      response.end(template);
+    });
+  }else if(pathname === '/create_process'){
+   let body = '';
+   request.on('data', function(data){ body += data;});
+   request.on('end', function(){
+    let post = qs.parse(body);
+    console.log('url : ' + _url);
+    console.log('body : ' + body);
+    console.log(post);
+   });
   } else {
     if (_url == "/style.css") {
       response.writeHead(200, { "Content-type": "text/css" });
