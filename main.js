@@ -70,9 +70,14 @@ const app = http.createServer(function (request, response) {
             let title = queryData.id;
             let list = templateList(filelist);
             let control = `
-            <a href="/create">create</a>
-            <a href="/update?id=${title}">update</a>
-          `;
+              <a href="/create">create</a>
+              <a href="/update?id=${title}">update</a>
+              <form id="frm" action="delete_process" method="post" style="display:inline">
+                <input type="hidden" name="id" value="${title}">
+                <input type="button" value="delete" 
+                onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
+              </form>
+            `;
             template = templateHTML(title, list, control, description);
             response.writeHead(200);
             response.end(template);
@@ -154,6 +159,19 @@ const app = http.createServer(function (request, response) {
           response.writeHead(302, { Location: `/?id=${title}` });
           response.end();
         });
+      });
+    });
+  } else if (pathname === "/delete_process") {
+    let body = "";
+    request.on("data", function (data) {
+      body += data;
+    });
+    request.on("end", function (){
+      let post = qs.parse(body);
+      let id = post.id;
+      fs.unlink(`data/${id}`, function (err) {
+        response.writeHead(302, { Location: `/` });
+        response.end();
       });
     });
   } else {
