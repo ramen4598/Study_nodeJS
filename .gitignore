@@ -5,3 +5,7 @@ image/
 old/
 
 etc/
+
+.DS_Store
+
+.vscode
