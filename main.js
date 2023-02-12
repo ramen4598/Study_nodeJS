@@ -93,9 +93,12 @@ const app = http.createServer(function (request, response) {
    request.on('data', function(data){ body += data;});
    request.on('end', function(){
     let post = qs.parse(body);
-    console.log('url : ' + _url);
-    console.log('body : ' + body);
-    console.log(post);
+    let title = post.title;
+    let description = post.description;
+    fs.writeFile(`data/${title}`, description, 'utf8', function(err){
+      response.writeHead(302, {Location: `/?id=${title}`});
+       response.end();
+    });
    });
   } else {
     if (_url == "/style.css") {
@@ -115,3 +118,6 @@ const app = http.createServer(function (request, response) {
   }
 });
 app.listen(3000);
+
+        response.writeHead(200);
+        response.end();
