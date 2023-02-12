@@ -51,8 +51,8 @@ const app = http.createServer(function (request, response) {
   if (pathname === "/") {
     if (queryData.id === undefined) {
       fs.readdir("./data", function (err, filelist) {
-        let title = "Welcome";
-        let description = "Hello Node.js";
+        let title = "Welcome :)";
+        let description = "Here is for to test node.js server :)";
         let list = templateList(filelist);
         let control = `
           <a href="/create">create</a>
@@ -115,7 +115,7 @@ const app = http.createServer(function (request, response) {
       let title = post.title;
       let description = post.description;
       fs.writeFile(`data/${title}`, description, "utf8", function (err) {
-        response.writeHead(302, { Location: `/?id=${title}` });
+        response.writeHead(302, { Location: encodeURI(`/?id=${title}`)});
         response.end();
       });
     });
@@ -156,7 +156,7 @@ const app = http.createServer(function (request, response) {
       let description = post.description;
       fs.rename(`./data/${id}`, `./data/${title}`, function (err) {
         fs.writeFile(`data/${title}`, description, "utf8", function (err) {
-          response.writeHead(302, { Location: `/?id=${title}` });
+          response.writeHead(302, { Location: encodeURI(`/?id=${title}`)});
           response.end();
         });
       });
