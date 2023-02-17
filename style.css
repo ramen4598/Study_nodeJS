@@ -21,23 +21,36 @@ h1 {
   border-right: 1px solid gray;
   width: 100px;
   margin: 0;
+  margin-left: 10px;
   padding: 30px;
   font-size: 30px;
 }
 #grid {
   display: grid;
-  grid-template-columns: 160px 1fr;
+  grid-template-columns: 170px 1fr;
 }
 #article {
   padding-left: 20px;
 }
+
+#article #control {
+  margin-top : 5px;
+  margin-bottom : 5px;
+}
+
 @media (max-width: 800px) {
   #grid {
     display: block;
   }
   #grid ul {
     border-right: none;
+    width: 100%;
   }
+
+  #grid #article {
+    border-top : 1px solid gray;
+  }
+
   h1 {
     border-bottom: none;
   }
