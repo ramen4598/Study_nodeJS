@@ -16,7 +16,7 @@ const app = http.createServer(function (request, response) {
         let description = "Here is for to test node.js server :)";
         let list = template.List(filelist);
         let control = `
-          <a href="/create">create</a>
+          <input type="button" value="create" onclick="redirect(this, '${title}')"/>
         `;
         let html = template.HTML(title, list, control, description);
         response.writeHead(200);
@@ -31,8 +31,8 @@ const app = http.createServer(function (request, response) {
             let title = queryData.id;
             let list = template.List(filelist);
             let control = `
-              <a href="/create">create</a>
-              <a href="/update?id=${title}">update</a>
+              <input type="button" value="create" onclick="redirect(this, '${title}')"/>
+              <input type="button" value="update" onclick="redirect(this, '${title}')"/>
               <form id="frm" action="delete_process" method="post" style="display:inline">
                 <input type="hidden" name="id" value="${title}">
                 <input type="button" value="delete" 
@@ -137,13 +137,21 @@ const app = http.createServer(function (request, response) {
     });
   } else {
     if (_url == "/style.css") {
+      const path = "style.css";
       response.writeHead(200, { "Content-type": "text/css" });
-      let fileContents = fs.readFileSync("style.css", "utf-8");
+      let fileContents = fs.readFileSync(path, "utf-8");
       response.write(fileContents);
       response.end();
-    } else if (_url == "/color.js") {
+    } else if (_url == "/lib/color.js") {
+      const path = "./lib/color.js"
       response.writeHead(200, { "Content-type": "text/js" });
-      let fileContents = fs.readFileSync("color.js", "utf-8");
+      let fileContents = fs.readFileSync(path, "utf-8");
+      response.write(fileContents);
+      response.end();
+    } else if (_url == "/lib/crudBtn.js") {
+      const path = "./lib/crudBtn.js";
+      response.writeHead(200, { "Content-type": "text/js" });
+      let fileContents = fs.readFileSync(path, "utf-8");
       response.write(fileContents);
       response.end();
     } else {
