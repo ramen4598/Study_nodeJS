@@ -50,7 +50,7 @@ const app = http.createServer(function (request, response) {
     fs.readdir("./data", function (err, filelist) {
       let title = "create";
       let description = `
-        <form action="http://localhost:3000/create_process" method="post">
+        <form action="/create_process" method="post">
 	        <p><input type="text" name="title" placeholder="title"></p>
 	        <p>
 	        	<textarea name="description" placeholder="description"></textarea>
@@ -85,7 +85,7 @@ const app = http.createServer(function (request, response) {
       fs.readdir("./data", function (err, filelist) {
         let title = queryData.id;
         let updateForm = `
-          <form action="http://localhost:3000/update_process" method="post">
+          <form action="/update_process" method="post">
 	          <p>
               <input type="hidden" name="id" value="${title}">
               <input type="text" name="title" placeholder="title" value="${title}">
