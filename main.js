@@ -3,6 +3,8 @@ const fs = require("fs");
 const url = require("url");
 const qs = require("querystring");
 const path = require("path");
+const sanitizeHtml = require("sanitize-html");
+
 const template = require("./lib/template.js");
 
 const app = http.createServer(function (request, response) {
@@ -77,8 +79,10 @@ const app = http.createServer(function (request, response) {
       let title = post.title;
       let description = post.description;
       let filteredTitle = path.parse(title).base;
-      fs.writeFile(`data/${filteredTitle}`, description, "utf8", function (err) {
-        response.writeHead(302, { Location: encodeURI(`/?id=${filteredTitle}`)});
+      let sanitizedTitle = sanitizeHtml(filteredTitle);
+      let sanitizedDesc = sanitizeHtml(description);
+      fs.writeFile(`data/${sanitizedTitle}`, sanitizedDesc, "utf8", function (err) {
+        response.writeHead(302, { Location: encodeURI(`/?id=${sanitizedTitle}`)});
         response.end();
       });
     });
@@ -119,9 +123,12 @@ const app = http.createServer(function (request, response) {
       let description = post.description;
       let filteredId = path.parse(id).base;
       let filteredTitle = path.parse(title).base;
-      fs.rename(`./data/${filteredId}`, `./data/${filteredTitle}`, function (err) {
-        fs.writeFile(`data/${filteredTitle}`, description, "utf8", function (err) {
-          response.writeHead(302, { Location: encodeURI(`/?id=${filteredTitle}`)});
+      let sanitizedId = sanitizeHtml(filteredId);
+      let sanitizedTitle = sanitizeHtml(filteredTitle);
+      let sanitizedDesc = sanitizeHtml(description);
+      fs.rename(`./data/${sanitizedId}`, `./data/${sanitizedTitle}`, function (err) {
+        fs.writeFile(`data/${sanitizedTitle}`, sanitizedDesc, "utf8", function (err) {
+          response.writeHead(302, { Location: encodeURI(`/?id=${sanitizedTitle}`)});
           response.end();
         });
       });
