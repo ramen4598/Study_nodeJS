@@ -25,23 +25,22 @@ const app = http.createServer(function (request, response) {
       });
     } else {
       fs.readdir("./data", function (err, filelist) {
-        let filteredId = path.parse(queryData.id).base;
+        let filteredTitle = path.parse(queryData.id).base;
         fs.readFile(
-          `data/${filteredId}`,
+          `data/${filteredTitle}`,
           "utf-8",
           function (err, description) {
-            let title = queryData.id;
             let list = template.List(filelist);
             let control = `
-              <input type="button" value="create" onclick="redirect(this, '${title}')"/>
-              <input type="button" value="update" onclick="redirect(this, '${title}')"/>
+              <input type="button" value="create" onclick="redirect(this, '${filteredTitle}')"/>
+              <input type="button" value="update" onclick="redirect(this, '${filteredTitle}')"/>
               <form id="frm" action="delete_process" method="post" style="display:inline">
-                <input type="hidden" name="id" value="${title}">
+                <input type="hidden" name="id" value="${filteredTitle}">
                 <input type="button" value="delete" 
                 onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
               </form>
             `;
-            let html = template.HTML(title, list, control, description);
+            let html = template.HTML(filteredTitle, list, control, description);
             response.writeHead(200);
             response.end(html);
           }
@@ -77,22 +76,21 @@ const app = http.createServer(function (request, response) {
       let post = qs.parse(body);
       let title = post.title;
       let description = post.description;
-      let filteredtitle = path.parse(title).base;
-      fs.writeFile(`data/${filteredtitle}`, description, "utf8", function (err) {
-        response.writeHead(302, { Location: encodeURI(`/?id=${filteredtitle}`)});
+      let filteredTitle = path.parse(title).base;
+      fs.writeFile(`data/${filteredTitle}`, description, "utf8", function (err) {
+        response.writeHead(302, { Location: encodeURI(`/?id=${filteredTitle}`)});
         response.end();
       });
     });
   } else if (pathname === "/update") {
-    let filteredId = path.parse(queryData.id).base;
-    fs.readFile(`data/${filteredId}`, "utf8", function (err, description) {
+    let filteredTitle = path.parse(queryData.id).base;
+    fs.readFile(`data/${filteredTitle}`, "utf8", function (err, description) {
       fs.readdir("./data", function (err, filelist) {
-        let title = queryData.id;
         let updateForm = `
           <form action="/update_process" method="post">
 	          <p>
-              <input type="hidden" name="id" value="${title}">
-              <input type="text" name="title" placeholder="title" value="${title}">
+              <input type="hidden" name="id" value="${filteredTitle}">
+              <input type="text" name="title" placeholder="title" value="${filteredTitle}">
             </p>
 	          <p>
 	           	<textarea name="description" placeholder="description">${description}</textarea>
@@ -104,7 +102,7 @@ const app = http.createServer(function (request, response) {
         `;
         let list = template.List(filelist);
         let control = ``;
-        let html = template.HTML(title, list, control, updateForm);
+        let html = template.HTML(filteredTitle, list, control, updateForm);
         response.writeHead(200);
         response.end(html);
       });
@@ -120,10 +118,10 @@ const app = http.createServer(function (request, response) {
       let title = post.title;
       let description = post.description;
       let filteredId = path.parse(id).base;
-      let filteredtitle = path.parse(title).base;
-      fs.rename(`./data/${filteredId}`, `./data/${filteredtitle}`, function (err) {
-        fs.writeFile(`data/${filteredtitle}`, description, "utf8", function (err) {
-          response.writeHead(302, { Location: encodeURI(`/?id=${filteredtitle}`)});
+      let filteredTitle = path.parse(title).base;
+      fs.rename(`./data/${filteredId}`, `./data/${filteredTitle}`, function (err) {
+        fs.writeFile(`data/${filteredTitle}`, description, "utf8", function (err) {
+          response.writeHead(302, { Location: encodeURI(`/?id=${filteredTitle}`)});
           response.end();
         });
       });
