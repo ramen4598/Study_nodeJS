@@ -27,7 +27,7 @@ test('어...어..어..ㅁ..', async()=> {
 test('엄.준.', (done)=>{
     function callback(Jun) {
         try{
-            expect(Jun).toBe('e준');
+            expect(Jun).toBe('준');
             done();
         }catch(error){
             done(error);
