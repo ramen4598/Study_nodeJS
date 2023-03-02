@@ -15,7 +15,9 @@ move to directory where `docker-compose.yml` file is.
 
 and then ...
 
-if you use linux/amd64 flatform check this!
+if you use linux/amd64 flatform check this!a
+
+default 1.1 version is for arm64.
 
 ```
 services:
