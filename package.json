@@ -7,11 +7,13 @@
     "lib": "lib"
   },
   "scripts": {
+    "start": "pm2 start ecosystem.config.js",
     "test": "jest"
   },
   "author": "tiredI",
   "license": "ISC",
   "dependencies": {
+    "pm2": "^5.2.2",
     "sanitize-html": "^2.10.0"
   },
   "devDependencies": {
