@@ -2,7 +2,7 @@
 
 생활코딩 node.js 강의 참고. https://opentutorials.org/course/3332
 
-# 1. to setup
+# 1. To setup
 
 ## clone repo (branch : mysql)
 ```
