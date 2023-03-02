@@ -15,15 +15,14 @@ move to directory where `docker-compose.yml` file is.
 
 and then ...
 
-if you use linux/amd64 flatform check this!a
+if you use linux/amd64 flatform check this!
 
-default 1.1 version is for arm64.
+1.1 version is for arm64.
 
 ```
 services:
   studynode: 
     #image : ghcr.io/ramen4598/studynode:1.1
-    image : ghrc.i0/ramen4598/studynode:1.1-amd64
     ...
 ```
 
