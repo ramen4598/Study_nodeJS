@@ -6,6 +6,7 @@ const path = require("path");
 const sanitizeHtml = require("sanitize-html");
 
 const template = require("./lib/template.js");
+const dataDir = "/app/src/data";
 
 const app = http.createServer(function (request, response) {
   const _url = request.url;
@@ -14,7 +15,7 @@ const app = http.createServer(function (request, response) {
 
   if (pathname === "/") {
     if (queryData.id === undefined) {
-      fs.readdir("./data", function (err, filelist) {
+      fs.readdir(dataDir, function (err, filelist) {
         let title = "Welcome :)";
         let description = "Here is for to test node.js server :)";
         let list = template.List(filelist);
@@ -26,10 +27,10 @@ const app = http.createServer(function (request, response) {
         response.end(html);
       });
     } else {
-      fs.readdir("./data", function (err, filelist) {
+      fs.readdir(dataDir, function (err, filelist) {
         let filteredTitle = path.parse(queryData.id).base;
         fs.readFile(
-          `data/${filteredTitle}`,
+          `${dataDir}/${filteredTitle}`,
           "utf-8",
           function (err, description) {
             let list = template.List(filelist);
@@ -50,7 +51,7 @@ const app = http.createServer(function (request, response) {
       });
     }
   } else if (pathname === "/create") {
-    fs.readdir("./data", function (err, filelist) {
+    fs.readdir(dataDir, function (err, filelist) {
       let title = "create";
       let description = `
         <form action="/create_process" method="post">
@@ -81,15 +82,15 @@ const app = http.createServer(function (request, response) {
       let filteredTitle = path.parse(title).base;
       let sanitizedTitle = sanitizeHtml(filteredTitle);
       let sanitizedDesc = sanitizeHtml(description);
-      fs.writeFile(`data/${sanitizedTitle}`, sanitizedDesc, "utf8", function (err) {
+      fs.writeFile(`${dataDir}/${sanitizedTitle}`, sanitizedDesc, "utf8", function (err) {
         response.writeHead(302, { Location: encodeURI(`/?id=${sanitizedTitle}`)});
         response.end();
       });
     });
   } else if (pathname === "/update") {
     let filteredTitle = path.parse(queryData.id).base;
-    fs.readFile(`data/${filteredTitle}`, "utf8", function (err, description) {
-      fs.readdir("./data", function (err, filelist) {
+    fs.readFile(`${dataDir}/${filteredTitle}`, "utf8", function (err, description) {
+      fs.readdir(dataDir, function (err, filelist) {
         let updateForm = `
           <form action="/update_process" method="post">
 	          <p>
@@ -126,8 +127,8 @@ const app = http.createServer(function (request, response) {
       let sanitizedId = sanitizeHtml(filteredId);
       let sanitizedTitle = sanitizeHtml(filteredTitle);
       let sanitizedDesc = sanitizeHtml(description);
-      fs.rename(`./data/${sanitizedId}`, `./data/${sanitizedTitle}`, function (err) {
-        fs.writeFile(`data/${sanitizedTitle}`, sanitizedDesc, "utf8", function (err) {
+      fs.rename(`${dataDir}/${sanitizedId}`, `./data/${sanitizedTitle}`, function (err) {
+        fs.writeFile(`${dataDir}/${sanitizedTitle}`, sanitizedDesc, "utf8", function (err) {
           response.writeHead(302, { Location: encodeURI(`/?id=${sanitizedTitle}`)});
           response.end();
         });
@@ -142,26 +143,26 @@ const app = http.createServer(function (request, response) {
       let post = qs.parse(body);
       let id = post.id;
       let filteredId = path.parse(id).base;
-      fs.unlink(`data/${filteredId}`, function (err) {
+      fs.unlink(`${dataDir}/${filteredId}`, function (err) {
         response.writeHead(302, { Location: `/` });
         response.end();
       });
     });
   } else {
     if (_url == "/style.css") {
-      const path = "style.css";
+      const path = "/app/src/style.css";
       response.writeHead(200, { "Content-type": "text/css" });
       let fileContents = fs.readFileSync(path, "utf-8");
       response.write(fileContents);
       response.end();
     } else if (_url == "/lib/color.js") {
-      const path = "./lib/color.js"
+      const path = "/app/src/lib/color.js"
       response.writeHead(200, { "Content-type": "text/js" });
       let fileContents = fs.readFileSync(path, "utf-8");
       response.write(fileContents);
       response.end();
     } else if (_url == "/lib/crudBtn.js") {
-      const path = "./lib/crudBtn.js";
+      const path = "/app/src/lib/crudBtn.js";
       response.writeHead(200, { "Content-type": "text/js" });
       let fileContents = fs.readFileSync(path, "utf-8");
       response.write(fileContents);

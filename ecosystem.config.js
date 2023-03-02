@@ -1,8 +1,8 @@
 module.exports = {
   apps : [{
     name   : "main",
-    script : "/src/main.js",
-	watch : ["/src/*"],
-	ignore_watch : ["/src/data/*"]
+    script : "/app/src/main.js",
+	watch : ["/app/src/*"],
+	ignore_watch : ["/app/src/data/*"]
   }]
 }

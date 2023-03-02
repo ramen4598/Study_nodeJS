@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM node:18.14.2
 
 RUN apt update && apt install -y git zsh vim
 
@@ -12,4 +12,6 @@ COPY ecosystem.config.js src .
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+ENTRYPOINT npm start
+
+CMD /bin/bash
