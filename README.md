@@ -11,7 +11,7 @@ git clone -b mysql https://github.com/ramen4598/Study_nodeJS.git
 
 ## docker compose up
 
-move to directory where `docker-compose.yml` file is exit
+move to directory where `docker-compose.yml` file is.
 
 and then ...
 
