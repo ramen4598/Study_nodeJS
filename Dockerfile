@@ -2,6 +2,8 @@ FROM node:18.14.2
 
 RUN apt update && apt install -y git zsh vim
 
+RUN npm install pm2 -g -y
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
