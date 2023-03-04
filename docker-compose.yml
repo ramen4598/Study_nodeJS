@@ -3,7 +3,7 @@ version : '3.7'
 
 services:
   studynode: 
-    image : ghcr.io/ramen4598/studynode:1.1.4-multiarch
+    image : ghcr.io/ramen4598/studynode:2.0-multiarch
     volumes :
       - ./:/app/
     ports :
