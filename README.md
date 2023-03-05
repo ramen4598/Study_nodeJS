@@ -15,19 +15,6 @@ move to directory where `docker-compose.yml` file is.
 
 and then ...
 
-if you use linux/amd64 flatform check this!
-
-1.1 version is for arm64.
-
-```
-services:
-  studynode: 
-    #image : ghcr.io/ramen4598/studynode:1.1
-    ...
-```
-
-Select the image according to the platform you use.
-
 ```
 # you should turn on docker before
 docker-compose up
