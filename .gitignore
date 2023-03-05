@@ -1,4 +1,6 @@
-data/
+./node_modules
+
+./src/data/*
 
 image/
 

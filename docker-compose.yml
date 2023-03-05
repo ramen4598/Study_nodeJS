@@ -5,7 +5,7 @@ services:
   studynode: 
     image : ghcr.io/ramen4598/studynode:2.0-multiarch
     volumes :
-      - ./:/app/
+      - ./src/:/app/src/
     ports :
       - "3000:3000"
     restart : always

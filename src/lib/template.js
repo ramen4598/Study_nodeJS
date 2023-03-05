@@ -31,10 +31,14 @@ module.exports = {
   },
   List : function(filelist) {
     let list = "<ul>";
-    for (let i = 0; i < filelist.length; i++) {
-      list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
+    if(Array.isArray(filelist)){
+	    for (let i = 0; i < Object.keys(filelist).length; i++) {
+	      list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
+	    }
+	    list += "</ul>";
+	    return list;
+    }else{
+      return `filelist isn't array. filelist is ${typeof filelist}.`;
     }
-    list += "</ul>";
-    return list;
   }
 }
