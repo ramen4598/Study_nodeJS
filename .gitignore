@@ -1,10 +1,7 @@
+
 ./node_modules
 
-./src/data/*
-
-image/
-
-etc/
+./src/data/
 
 .DS_Store
 
