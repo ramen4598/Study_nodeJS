@@ -41,6 +41,7 @@ const app = http.createServer(function (request, response) {
       `;
       readAndRes(dataDir, title, description, control);
     } else {
+      /*
       fs.readdir(dataDir, function (err, filelist) {
         let filteredTitle = path.parse(queryData.id).base;
         fs.readFile(
@@ -63,6 +64,19 @@ const app = http.createServer(function (request, response) {
           }
         );
       });
+      */
+      const filteredTitle = path.parse(queryData.id).base;
+      const description = fs.readFileSync(`${dataDir}/${filteredTitle}`, "utf-8");
+      let control = `
+        <input type="button" value="create" onclick="redirect(this, '${filteredTitle}')"/>
+        <input type="button" value="update" onclick="redirect(this, '${filteredTitle}')"/>
+        <form id="frm" action="delete_process" method="post" style="display:inline">
+          <input type="hidden" name="id" value="${filteredTitle}">
+          <input type="button" value="delete" 
+          onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
+        </form>
+      `;
+      readAndRes(dataDir, filteredTitle, description, control);
     }
   } else if (pathname === "/create") {
     fs.readdir(dataDir, function (err, filelist) {
