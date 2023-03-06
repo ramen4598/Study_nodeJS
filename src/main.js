@@ -8,24 +8,38 @@ const sanitizeHtml = require("sanitize-html");
 const template = require("./lib/template.js");
 const dataDir = "/app/src/data";
 
+
+
 const app = http.createServer(function (request, response) {
   const _url = request.url;
   const queryData = url.parse(_url, true).query;
   const pathname = url.parse(_url, true).pathname;
 
+  /**디렉터리 안에 파일의 이름을 읽고  html response함.
+  * path, title, decscription, control
+  */
+  function readAndRes(path, title, description, control){
+    fs.readdir(path, function (err, filelist) {
+      const noData = `ENOENT: no such file or directory, scandir '/app/src/data'`;
+      if (err && err.message === noData){
+        fs.mkdirSync(path, {recursive: true});
+        filelist = [""];
+      }
+      let list = template.List(filelist);
+      let html = template.HTML(title, list, control, description);
+      response.writeHead(200);
+      response.end(html);
+    });
+  }
+
   if (pathname === "/") {
     if (queryData.id === undefined) {
-      fs.readdir(dataDir, function (err, filelist) {
-        let title = "Welcome :)";
-        let description = "Here is for to test node.js server :)";
-        let list = template.List(filelist);
-        let control = `
-          <input type="button" value="create" onclick="redirect(this, '${title}')"/>
-        `;
-        let html = template.HTML(title, list, control, description);
-        response.writeHead(200);
-        response.end(html);
-      });
+      let title = "Welcome :)";
+      let description = "Here is for to test node.js server :)";
+      let control = `
+        <input type="button" value="create" onclick="redirect(this, '${title}')"/>
+      `;
+      readAndRes(dataDir, title, description, control);
     } else {
       fs.readdir(dataDir, function (err, filelist) {
         let filteredTitle = path.parse(queryData.id).base;
@@ -149,24 +163,21 @@ const app = http.createServer(function (request, response) {
       });
     });
   } else {
+  	function resFile (path){
+		response.writeHead(200, { "Content-type": "text/css" });
+		let fileContents = fs.readFileSync(path, "utf-8");
+		response.write(fileContents);
+		response.end();
+	}
     if (_url == "/style.css") {
-      const path = "/app/src/style.css";
-      response.writeHead(200, { "Content-type": "text/css" });
-      let fileContents = fs.readFileSync(path, "utf-8");
-      response.write(fileContents);
-      response.end();
+		const path = "/app/src/style.css";
+		resFile(path);
     } else if (_url == "/lib/color.js") {
-      const path = "/app/src/lib/color.js"
-      response.writeHead(200, { "Content-type": "text/js" });
-      let fileContents = fs.readFileSync(path, "utf-8");
-      response.write(fileContents);
-      response.end();
+    	const path = "/app/src/lib/color.js"
+		resFile(path);
     } else if (_url == "/lib/crudBtn.js") {
-      const path = "/app/src/lib/crudBtn.js";
-      response.writeHead(200, { "Content-type": "text/js" });
-      let fileContents = fs.readFileSync(path, "utf-8");
-      response.write(fileContents);
-      response.end();
+    	const path = "/app/src/lib/crudBtn.js";
+		resFile(path);
     } else {
       response.writeHead(404);
       response.end("Not found");
