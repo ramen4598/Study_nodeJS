@@ -7,3 +7,5 @@ src/data/*
 .DS_Store
 
 .vscode
+
+./db_data

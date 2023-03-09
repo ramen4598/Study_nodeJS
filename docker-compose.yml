@@ -1,8 +1,20 @@
-#docker run -it --name studynode -p 3000:3000 -v ~/Desktop/Study_nodeJS/:/app/  studynode:1.0
 version : '3.7'
 
 services:
+	mysql:
+		image : msql:8.0.32
+    volumes:
+      - ./db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: opentutorials
+      MYSQL_USER: nodejs
+      MYSQL_PASSWORD: 123456
+
   studynode: 
+		depends_on:
+			- mysql
     image : ghcr.io/ramen4598/studynode:2.0-multiarch
     volumes :
       - ./src/:/app/src/
