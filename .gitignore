@@ -8,4 +8,4 @@ src/data/*
 
 .vscode
 
-./db_data
+db_data
