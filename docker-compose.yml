@@ -15,9 +15,15 @@ services:
   studynode: 
     depends_on:
       - mysql
-    image : ghcr.io/ramen4598/studynode:2.1-multiarch
+    image : ghcr.io/ramen4598/studynode:3.0-multiarch
     volumes :
       - ./src/:/app/src/
     ports :
       - "3000:3000"
     restart : always
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: opentutorials
+      MYSQL_USER: nodejs
+      MYSQL_PASSWORD: 123456
+      MYSQL_PORT: 3306
