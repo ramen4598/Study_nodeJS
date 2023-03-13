@@ -28,24 +28,23 @@ module.exports = {
       </html>
     `;
   },
+  // List: function (filelist) {
+  //   const fs = require('fs');
+  //   const dataDir = '/app/src/data';
+  //   let list = "<ul>";
+  //   if(Array.isArray(filelist)){
+	//     for (let i = 0; i < filelist.length; i++) {
+	//       list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
+	//     }
+	//     list += "</ul>";
+	//     return list;
+  //   }else{
+	//   	fs.mkdirSync(dataDir, {recursive:true});
+  //     return "";
+	//     console.log('make data directory');
+  //   }
+  // }
   List: function (topics) {
-    /*
-    const fs = require('fs');
-    const dataDir = '/app/src/data';
-    let list = "<ul>";
-    if(Array.isArray(filelist)){
-	    for (let i = 0; i < filelist.length; i++) {
-	      list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
-	    }
-	    list += "</ul>";
-	    return list;
-    }else{
-	  	fs.mkdirSync(dataDir, {recursive:true});
-      return "";
-	    console.log('make data directory');
-    }
-  }
-  */
     let list = "<ul>";
     for (let i = 0; i < topics.length; i++) {
       list += `<li><a href="/?id=${topics[i].id}">${topics[i].title}</a></li>`;

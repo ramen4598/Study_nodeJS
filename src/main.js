@@ -7,12 +7,13 @@ const sanitizeHtml = require("sanitize-html");
 
 const template = require("./lib/template.js");
 const dataDir = "/app/src/data";
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const db = mysql.createConnection({
-	host: 'localhost',
-	user: 'nodejs',
-	password: '123456',
-	database: 'opentutorials'
+  host: process.env.MYSQL_HOST, 
+  user: process.env.MYSQL_USER, 
+  password: process.env.MYSQL_PASSWORD, 
+  database: process.env.MYSQL_DATABASE,
+  port: process.env.MYSQL_PORT
 });
 db.connect();
 
@@ -26,18 +27,22 @@ const app = http.createServer(function (request, response) {
    * path, title, decscription, control
    */
 	function readAndRes(path, title, description, control) {
-    /*fs.readdir(path, function (err, filelist) {
-      const noData = `ENOENT: no such file or directory, scandir '/app/src/data'`;
-      if (err && err.message === noData) {
-        fs.mkdirSync(path, { recursive: true });
-        filelist = [""];
+    // fs.readdir(path, function (err, filelist) {
+    //   const noData = `ENOENT: no such file or directory, scandir '/app/src/data'`;
+    //   if (err && err.message === noData) {
+    //     fs.mkdirSync(path, { recursive: true });
+    //     filelist = [""];
+    //   }
+    //   let list = template.List(filelist);
+    //   let html = template.HTML(title, list, control, description);
+    //   response.writeHead(200);
+    //   response.end(html);
+    // });
+		db.query(`SELECT * FROM topic`, function(error, topics){
+      if(error){
+        throw error;
       }
-      let list = template.List(filelist);
-      let html = template.HTML(title, list, control, description);
-      response.writeHead(200);
-      response.end(html);
-    });*/
-		db.query(`SELECT * FROM ?`,[topic], function(error, topics){
+      console.log(topics);
 		  let list = template.List(topics);
 		  let html = template.HTML(title, list, control, description);
 		  response.writeHead(200);
@@ -199,5 +204,4 @@ const app = http.createServer(function (request, response) {
   }
 });
 
-db.end();
 app.listen(3000);
