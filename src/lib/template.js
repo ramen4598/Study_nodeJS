@@ -1,5 +1,5 @@
 module.exports = {
-  HTML : function(title, list, control, description) {
+  HTML: function (title, list, control, description) {
     return `
      <!DOCTYPE html>
      <html lang="en">
@@ -15,8 +15,7 @@ module.exports = {
        <body>
          <div id="top">
            <h1><a href="/">Board</a></h1>
-           <input type="button" value="night" onclick="nightDayHandler(this)"/>
-         </div>
+           <input type="button" value="night" onclick="nightDayHandler(this)"/> </div>
          <div id="grid">
           ${list}
           <div id="article">
@@ -29,7 +28,8 @@ module.exports = {
       </html>
     `;
   },
-  List : function(filelist) {
+  List: function (topics) {
+    /*
     const fs = require('fs');
     const dataDir = '/app/src/data';
     let list = "<ul>";
@@ -45,4 +45,12 @@ module.exports = {
 	    console.log('make data directory');
     }
   }
-}
+  */
+    let list = "<ul>";
+    for (let i = 0; i < topics.length; i++) {
+      list += `<li><a href="/?id=${topics[i].id}">${topics[i].title}</a></li>`;
+    }
+    list += "</ul>";
+    return list;
+  },
+};

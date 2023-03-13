@@ -7,17 +7,26 @@ const sanitizeHtml = require("sanitize-html");
 
 const template = require("./lib/template.js");
 const dataDir = "/app/src/data";
+const mysql = require('mysql');
+const db = mysql.createConnection({
+	host: 'localhost',
+	user: 'nodejs',
+	password: '123456',
+	database: 'opentutorials'
+});
+db.connect();
 
 const app = http.createServer(function (request, response) {
   const _url = request.url;
   const queryData = url.parse(_url, true).query;
   const pathname = url.parse(_url, true).pathname;
 
+
   /**디렉터리 안에 파일의 이름을 읽고  html response함.
    * path, title, decscription, control
    */
-  function readAndRes(path, title, description, control) {
-    fs.readdir(path, function (err, filelist) {
+	function readAndRes(path, title, description, control) {
+    /*fs.readdir(path, function (err, filelist) {
       const noData = `ENOENT: no such file or directory, scandir '/app/src/data'`;
       if (err && err.message === noData) {
         fs.mkdirSync(path, { recursive: true });
@@ -27,8 +36,14 @@ const app = http.createServer(function (request, response) {
       let html = template.HTML(title, list, control, description);
       response.writeHead(200);
       response.end(html);
-    });
-  }
+    });*/
+		db.query(`SELECT * FROM ?`,[topic], function(error, topics){
+		  let list = template.List(topics);
+		  let html = template.HTML(title, list, control, description);
+		  response.writeHead(200);
+		  response.end(html);
+		});
+	}
 
   if (pathname === "/") {
     if (queryData.id === undefined) {
@@ -183,4 +198,6 @@ const app = http.createServer(function (request, response) {
     }
   }
 });
+
+db.end();
 app.listen(3000);

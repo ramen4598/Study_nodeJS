@@ -15,7 +15,7 @@ services:
   studynode: 
     depends_on:
       - mysql
-    image : ghcr.io/ramen4598/studynode:2.0-multiarch
+    image : ghcr.io/ramen4598/studynode:2.1-multiarch
     volumes :
       - ./src/:/app/src/
     ports :
