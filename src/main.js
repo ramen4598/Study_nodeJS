@@ -148,6 +148,34 @@ const app = http.createServer(function (request, response) {
       let id = post.id;
       let title = post.title;
       let description = post.description;
+      let sanitizedTitle = sanitizeHtml(title);
+      let sanitizedDesc = sanitizeHtml(description);
+      db.query(
+        `UPDATE topic 
+          SET title=?, description=?, author_id=1
+          WHERE id=?`,
+        [sanitizedTitle, sanitizedDesc, id],
+        function (error, result) {
+          if (error) {
+            throw error;
+          }
+          response.writeHead(302, {
+            Location: encodeURI(`/?id=${id}`),
+          });
+          response.end();
+        }
+      );
+    });
+    /*
+    let body = "";
+    request.on("data", function (data) {
+      body += data;
+    });
+    request.on("end", function () {
+      let post = qs.parse(body);
+      let id = post.id;
+      let title = post.title;
+      let description = post.description;
       let filteredId = path.parse(id).base;
       let filteredTitle = path.parse(title).base;
       let sanitizedId = sanitizeHtml(filteredId);
@@ -171,6 +199,7 @@ const app = http.createServer(function (request, response) {
         }
       );
     });
+    */
   } else if (pathname === "/delete_process") {
     let body = "";
     request.on("data", function (data) {
