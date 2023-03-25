@@ -42,7 +42,7 @@ const app = http.createServer(function (request, response) {
       let title = "Welcome :)";
       let description = "Here is for to test node.js server :)";
       let control = `
-        <input type="button" value="create" onclick="redirect(this, '${title}')"/>
+        <input type="button" value="create" onclick="redirect(this, '')"/>
       `;
       readAndRes(dataDir, title, description, control);
     } else {
@@ -166,40 +166,6 @@ const app = http.createServer(function (request, response) {
         }
       );
     });
-    /*
-    let body = "";
-    request.on("data", function (data) {
-      body += data;
-    });
-    request.on("end", function () {
-      let post = qs.parse(body);
-      let id = post.id;
-      let title = post.title;
-      let description = post.description;
-      let filteredId = path.parse(id).base;
-      let filteredTitle = path.parse(title).base;
-      let sanitizedId = sanitizeHtml(filteredId);
-      let sanitizedTitle = sanitizeHtml(filteredTitle);
-      let sanitizedDesc = sanitizeHtml(description);
-      fs.rename(
-        `${dataDir}/${sanitizedId}`,
-        `./data/${sanitizedTitle}`,
-        function (err) {
-          fs.writeFile(
-            `${dataDir}/${sanitizedTitle}`,
-            sanitizedDesc,
-            "utf8",
-            function (err) {
-              response.writeHead(302, {
-                Location: encodeURI(`/?id=${sanitizedTitle}`),
-              });
-              response.end();
-            }
-          );
-        }
-      );
-    });
-    */
   } else if (pathname === "/delete_process") {
     let body = "";
     request.on("data", function (data) {
@@ -208,8 +174,10 @@ const app = http.createServer(function (request, response) {
     request.on("end", function () {
       let post = qs.parse(body);
       let id = post.id;
-      let filteredId = path.parse(id).base;
-      fs.unlink(`${dataDir}/${filteredId}`, function (err) {
+      db.query(`DELETE FROM topic WHERE id=?`,[id],function (error) {
+        if (error){
+          throw error;
+        }
         response.writeHead(302, { Location: `/` });
         response.end();
       });
