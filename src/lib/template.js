@@ -1,5 +1,5 @@
 module.exports = {
-  HTML: function (title, list, control, description) {
+  HTML: function (title, list, control, description, author) {
     return `
      <!DOCTYPE html>
      <html lang="en">
@@ -21,29 +21,18 @@ module.exports = {
           <div id="article">
             <div id="control">${control}</div>
             <h2>${title}</h2>
-            ${description}
+            <p>
+              ${author}
+            </p>
+            <p>
+              ${description}
+            </p>
           </div>
         </div>
        </body>
       </html>
     `;
   },
-  // List: function (filelist) {
-  //   const fs = require('fs');
-  //   const dataDir = '/app/src/data';
-  //   let list = "<ul>";
-  //   if(Array.isArray(filelist)){
-	//     for (let i = 0; i < filelist.length; i++) {
-	//       list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
-	//     }
-	//     list += "</ul>";
-	//     return list;
-  //   }else{
-	//   	fs.mkdirSync(dataDir, {recursive:true});
-  //     return "";
-	//     console.log('make data directory');
-  //   }
-  // }
   List: function (topics) {
     let list = "<ul>";
     for (let i = 0; i < topics.length; i++) {
@@ -51,5 +40,21 @@ module.exports = {
     }
     list += "</ul>";
     return list;
-  },
+  },authorSelect:function(authors, author_id){
+    let tag = '';
+    let i = 0;
+    while(i < authors.length){
+      let selected ='';
+      if (authors[i].id === author_id){
+        selected = 'selected';
+      }
+      tag += `<option value="${authors[i].id}" ${selected}>${authors[i].name}</option>`;
+      i++;
+    }
+    return `
+      <select name="author">
+        ${tag}
+      </select>
+    `
+  }
 };

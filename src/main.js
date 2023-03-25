@@ -25,13 +25,13 @@ const app = http.createServer(function (request, response) {
   /**디렉터리 안에 파일의 이름을 읽고  html response함.
    * path, title, decscription, control
    */
-  function readAndRes(path, title, description, control) {
+  function readAndRes(title, description, control, author) {
     db.query(`SELECT * FROM topic`, function (error, topics) {
       if (error) {
         throw error;
       }
       let list = template.List(topics);
-      let html = template.HTML(title, list, control, description);
+      let html = template.HTML(title, list, control, description, author);
       response.writeHead(200);
       response.end(html);
     });
@@ -39,15 +39,16 @@ const app = http.createServer(function (request, response) {
 
   if (pathname === "/") {
     if (queryData.id === undefined) {
-      let title = "Welcome :)";
-      let description = "Here is for to test node.js server :)";
-      let control = `
+      const title = "Welcome :)";
+      const description = "Here is for to test node.js server :)";
+      const control = `
         <input type="button" value="create" onclick="redirect(this, '')"/>
       `;
-      readAndRes(dataDir, title, description, control);
+      const author = '';
+      readAndRes(title, description, control, author);
     } else {
       db.query(
-        `SELECT * FROM topic WHERE id=?`,
+        `SELECT * FROM topic LEFT JOIN author ON topic.author_id= author.id WHERE topic.id=?`,
         [queryData.id],
         function (error, topic) {
           if (error) {
@@ -56,7 +57,7 @@ const app = http.createServer(function (request, response) {
           const title = topic[0].title;
           const description = topic[0].description;
           const id = queryData.id;
-          let control = `
+          const control = `
           <input type="button" value="create" onclick="redirect(this, '${id}')"/>
           <input type="button" value="update" onclick="redirect(this, '${id}')"/>
           <form id="frm" action="delete_process" method="post" style="display:inline">
@@ -65,25 +66,30 @@ const app = http.createServer(function (request, response) {
             onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
           </form>
         `;
-          readAndRes(dataDir, title, description, control);
+          const author = `작성자 : ${topic[0].name}`;
+          readAndRes(title, description, control, author);
         }
       );
     }
   } else if (pathname === "/create") {
-    let title = "create";
-    let description = `
-        <form action="/create_process" method="post">
-	        <p><input type="text" name="title" placeholder="title"></p>
-	        <p>
-	        	<textarea name="description" placeholder="description"></textarea>
-	        </p>
-	        <p>
-	        	<input type="submit">
-	        </p>
-        </form>
-      `;
-    let control = ``;
-    readAndRes(dataDir, title, description, control);
+    db.query(`SELECT * FROM author`,function(error, authors){
+      let title = "create";
+      let description = `
+          <form action="/create_process" method="post">
+              <p>${template.authorSelect(authors,'')}</p>
+              <p><input type="text" name="title" placeholder="title"></p>
+              <p>
+                  <textarea name="description" placeholder="description"></textarea>
+              </p>
+              <p>
+                  <input type="submit">
+              </p>
+          </form>
+        `;
+      let control = '';
+      let author  = '';
+      readAndRes(title, description, control, author);
+    });
   } else if (pathname === "/create_process") {
     let body = "";
     request.on("data", function (data) {
@@ -98,7 +104,7 @@ const app = http.createServer(function (request, response) {
       db.query(
         `INSERT INTO topic (title, description, created, author_id) 
         VALUES (?, ?, NOW(), ?)`,
-        [sanitizedTitle, sanitizedDesc, 1],
+        [sanitizedTitle, sanitizedDesc, post.author],
         function (error, result) {
           if (error) {
             throw error;
@@ -111,33 +117,36 @@ const app = http.createServer(function (request, response) {
       );
     });
   } else if (pathname === "/update") {
-    db.query(
-      `SELECT * FROM topic WHERE id=?`,
-      [queryData.id],
-      function (error, topic) {
+    db.query(`SELECT * FROM topic WHERE id=?`,[queryData.id],function (error, topic) {
         if (error) {
           throw error;
         }
-        const title = topic[0].title;
-        const description = topic[0].description;
-        const id = queryData.id;
-        let control = ``;
-        const updateForm = `
-          <form action="/update_process" method="post">
-              <p>
-              <input type="hidden" name="id" value="${id}">
-              <input type="text" name="title" placeholder="title" value="${title}"> </p>
-              <p>
-                   <textarea name="description" placeholder="description">${description}</textarea>
-              </p>
-              <p>
-                   <input type="submit">
-              </p>
-          </form>
-        `;
-        readAndRes(dataDir, title, updateForm, control);
-      }
-    );
+        db.query(`SELECT * FROM author`,function(error2, authors){
+          if (error2){
+            throw error2
+          }
+          const title = topic[0].title;
+          const description = topic[0].description;
+          const id = queryData.id;
+          let control = ``;
+          const updateForm = `
+            <form action="/update_process" method="post">
+                <p>${template.authorSelect(authors, topic[0].author_id)}</p>
+                <p>
+                <input type="hidden" name="id" value="${id}">
+                <input type="text" name="title" placeholder="title" value="${title}"> </p>
+                <p>
+                     <textarea name="description" placeholder="description">${description}</textarea>
+                </p>
+                <p>
+                     <input type="submit">
+                </p>
+            </form>
+          `;
+          const author = ``;
+          readAndRes(title, updateForm, control, author);
+        });
+    });
   } else if (pathname === "/update_process") {
     let body = "";
     request.on("data", function (data) {
@@ -152,9 +161,9 @@ const app = http.createServer(function (request, response) {
       let sanitizedDesc = sanitizeHtml(description);
       db.query(
         `UPDATE topic 
-          SET title=?, description=?, author_id=1
+          SET title=?, description=?, author_id=?
           WHERE id=?`,
-        [sanitizedTitle, sanitizedDesc, id],
+        [sanitizedTitle, sanitizedDesc, post.author, id],
         function (error, result) {
           if (error) {
             throw error;
