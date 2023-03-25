@@ -27,26 +27,14 @@ const app = http.createServer(function (request, response) {
    * path, title, decscription, control
    */
 	function readAndRes(path, title, description, control) {
-    // fs.readdir(path, function (err, filelist) {
-    //   const noData = `ENOENT: no such file or directory, scandir '/app/src/data'`;
-    //   if (err && err.message === noData) {
-    //     fs.mkdirSync(path, { recursive: true });
-    //     filelist = [""];
-    //   }
-    //   let list = template.List(filelist);
-    //   let html = template.HTML(title, list, control, description);
-    //   response.writeHead(200);
-    //   response.end(html);
-    // });
 		db.query(`SELECT * FROM topic`, function(error, topics){
-      if(error){
-        throw error;
-      }
-      console.log(topics);
-		  let list = template.List(topics);
-		  let html = template.HTML(title, list, control, description);
-		  response.writeHead(200);
-		  response.end(html);
+    	if(error){
+        	throw error;
+      	}
+		let list = template.List(topics);
+		let html = template.HTML(title, list, control, description);
+		response.writeHead(200);
+		response.end(html);
 		});
 	}
 
@@ -59,21 +47,24 @@ const app = http.createServer(function (request, response) {
       `;
       readAndRes(dataDir, title, description, control);
     } else {
-      const filteredTitle = path.parse(queryData.id).base;
-      const description = fs.readFileSync(
-        `${dataDir}/${filteredTitle}`,
-        "utf-8"
-      );
-      let control = `
-        <input type="button" value="create" onclick="redirect(this, '${filteredTitle}')"/>
-        <input type="button" value="update" onclick="redirect(this, '${filteredTitle}')"/>
-        <form id="frm" action="delete_process" method="post" style="display:inline">
-          <input type="hidden" name="id" value="${filteredTitle}">
-          <input type="button" value="delete" 
-          onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
-        </form>
-      `;
-      readAndRes(dataDir, filteredTitle, description, control);
+		  db.query(`SELECT * FROM topic WHERE id=?`, [queryData.id], function(error, topic){
+    	  if(error){
+        	throw error;
+      	}
+        const title = topic[0].title;
+        const description = topic[0].description;
+        const filteredId = path.parse(queryData.id).base;
+        let control = `
+          <input type="button" value="create" onclick="redirect(this, '${filteredId}')"/>
+          <input type="button" value="update" onclick="redirect(this, '${filteredId}')"/>
+          <form id="frm" action="delete_process" method="post" style="display:inline">
+            <input type="hidden" name="id" value="${filteredId}">
+            <input type="button" value="delete" 
+            onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
+          </form>
+        `;
+        readAndRes(dataDir, title, description, control);
+      });
     }
   } else if (pathname === "/create") {
     let title = "create";
