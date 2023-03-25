@@ -90,16 +90,16 @@ const app = http.createServer(function (request, response) {
       let post = qs.parse(body);
       let title = post.title;
       let description = post.description;
-      let filteredTitle = path.parse(title).base;
-      let sanitizedTitle = sanitizeHtml(filteredTitle);
+      let sanitizedTitle = sanitizeHtml(title);
       let sanitizedDesc = sanitizeHtml(description);
-      fs.writeFile(
-        `${dataDir}/${sanitizedTitle}`,
-        sanitizedDesc,
-        "utf8",
-        function (err) {
+      db.query(`INSERT INTO topic (title, description, created, author_id) 
+        VALUES (?, ?, NOW(), ?)`,[sanitizedTitle, sanitizedDesc, 1],
+        function(error, result){
+          if(error){
+            throw error;
+          }
           response.writeHead(302, {
-            Location: encodeURI(`/?id=${sanitizedTitle}`),
+            Location: encodeURI(`/?id=${result.insertId}`),
           });
           response.end();
         }
