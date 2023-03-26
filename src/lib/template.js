@@ -1,7 +1,9 @@
 const db = require('./db.js');
 
 module.exports = {
-  HTML: function (title, list, control, description, author) {
+  // HTML: function (title, list, control, description, author) {
+  HTML: function (Ready) {
+    const list = this.List();
     return `
      <!DOCTYPE html>
      <html lang="en">
@@ -9,7 +11,7 @@ module.exports = {
          <meta charset="UTF-8" />
          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-         <title>WEB - ${title}</title>
+         <title>WEB - ${Ready.title}</title>
          <link rel="stylesheet" href="style.css">
          <script src="./lib/color.js"></script>
          <script src="./lib/crudBtn.js"></script>
@@ -17,17 +19,17 @@ module.exports = {
        <body>
          <div id="top">
            <h1><a href="/">Board</a></h1>
-           <input type="button" value="night" onclick="nightDayHandler(this)"/> </div>
+           <input type="button" value="night" onclick="nightDayHandler(Ready)"/> </div>
          <div id="grid">
           ${list}
           <div id="article">
-            <div id="control">${control}</div>
-            <h2>${title}</h2>
+            <div id="control">${Ready.control}</div>
+            <h2>${Ready.title}</h2>
             <p>
-              ${author}
+              ${Ready.author}
             </p>
             <p>
-              ${description}
+              ${Ready.description}
             </p>
           </div>
         </div>
@@ -36,12 +38,14 @@ module.exports = {
     `;
   },
   List: function (topics) {
-    let list = "<ul>";
-    for (let i = 0; i < topics.length; i++) {
-      list += `<li><a href="/?id=${topics[i].id}">${topics[i].title}</a></li>`;
-    }
-    list += "</ul>";
-    return list;
+    db.query(`SELECT * FROM topic`,(error, topics)=>{
+      let list = "<ul>";
+      for (let i = 0; i < topics.length; i++) {
+        list += `<li><a href="/?id=${topics[i].id}">${topics[i].title}</a></li>`;
+      }
+      list += "</ul>";
+      return list;
+    });
   },authorSelect:function(authors, author_id){
     let tag = '';
     let i = 0;

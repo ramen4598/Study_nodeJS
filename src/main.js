@@ -25,6 +25,26 @@ const app = http.createServer(function (request, response) {
       response.end(html);
     });
   }
+  /** new Ready(title, des, control, author)   
+   * 속성 title, description, contol, author, html
+   * method : makeHtml, response
+  */
+ class Ready{
+  constructor(title, des, control, author){
+    this.title = title;
+    this.decscription = des;
+    this.control = control;
+    this.author = author;
+    this.html = '';
+  }
+  makeHtml() {
+    this.html = template.HTML(this);
+  }
+  response(){
+    response.writeHead(200);
+    response.end(this.html);
+  }
+ }
 
   if (pathname === "/") {
     if (queryData.id === undefined) {
