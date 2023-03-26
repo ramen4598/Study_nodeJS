@@ -54,7 +54,9 @@ const app = http.createServer(function (request, response) {
         <input type="button" value="create" onclick="redirect(this, '')"/>
       `;
       const author = '';
-      readAndRes(title, description, control, author);
+      const undefinedCase = new Ready(title, description, control, author);
+      undefinedCase.makeHtml;
+      undefinedCase.response;
     } else {
       db.query(
         `SELECT * FROM topic LEFT JOIN author ON topic.author_id= author.id WHERE topic.id=?`,
@@ -65,40 +67,41 @@ const app = http.createServer(function (request, response) {
           }
           const title = topic[0].title;
           const description = topic[0].description;
-          const id = queryData.id;
           const control = `
           <input type="button" value="create" onclick="redirect(this, '')"/>
-          <input type="button" value="update" onclick="redirect(this, '${id}')"/>
+          <input type="button" value="update" onclick="redirect(this, '${queryData.id}')"/>
           <form id="frm" action="delete_process" method="post" style="display:inline">
-            <input type="hidden" name="id" value="${id}">
+            <input type="hidden" name="id" value="${queryData.id}">
             <input type="button" value="delete" 
             onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
           </form>
         `;
           const author = `작성자 : ${topic[0].name}`;
-          readAndRes(title, description, control, author);
+          const definedCase = new Ready(title, description, control, author);
+          definedCase.makeHtml;
+          definedCase.response;
         }
       );
     }
   } else if (pathname === "/create") {
-    db.query(`SELECT * FROM author`,function(error, authors){
-      let title = "create";
-      let description = `
-          <form action="/create_process" method="post">
-              <p>${template.authorSelect(authors,'')}</p>
-              <p><input type="text" name="title" placeholder="title"></p>
-              <p>
-                  <textarea name="description" placeholder="description"></textarea>
-              </p>
-              <p>
-                  <input type="submit">
-              </p>
-          </form>
-        `;
-      let control = '';
-      let author  = '';
-      readAndRes(title, description, control, author);
-    });
+    let title = "create";
+    let description = `
+        <form action="/create_process" method="post">
+            <p>${template.authorSelect('')}</p>
+            <p><input type="text" name="title" placeholder="title"></p>
+            <p>
+                <textarea name="description" placeholder="description"></textarea>
+            </p>
+            <p>
+                <input type="submit">
+            </p>
+        </form>
+      `;
+    let control = '';
+    let author  = '';
+    const createCase = new Ready(title, description, control, author);
+    createCase.makeHtml;
+    createCase.response;
   } else if (pathname === "/create_process") {
     let body = "";
     request.on("data", function (data) {
@@ -127,34 +130,30 @@ const app = http.createServer(function (request, response) {
     });
   } else if (pathname === "/update") {
     db.query(`SELECT * FROM topic WHERE id=?`,[queryData.id],function (error, topic) {
-        if (error) {
-          throw error;
-        }
-        db.query(`SELECT * FROM author`,function(error2, authors){
-          if (error2){
-            throw error2
-          }
-          const title = topic[0].title;
-          const description = topic[0].description;
-          const id = queryData.id;
-          let control = ``;
-          const updateForm = `
-            <form action="/update_process" method="post">
-                <p>${template.authorSelect(authors, topic[0].author_id)}</p>
-                <p>
-                <input type="hidden" name="id" value="${id}">
-                <input type="text" name="title" placeholder="title" value="${title}"> </p>
-                <p>
-                     <textarea name="description" placeholder="description">${description}</textarea>
-                </p>
-                <p>
-                     <input type="submit">
-                </p>
-            </form>
-          `;
-          const author = ``;
-          readAndRes(title, updateForm, control, author);
-        });
+      if (error) {
+        throw error;
+      }
+      const id = queryData.id;
+      const title = topic[0].title;
+      const description = `
+        <form action="/update_process" method="post">
+            <p>${template.authorSelect(topic[0].author_id)}</p>
+            <p>
+            <input type="hidden" name="id" value="${id}">
+            <input type="text" name="title" placeholder="title" value="${title}"> </p>
+            <p>
+                 <textarea name="description" placeholder="description">${topic[0].description}</textarea>
+            </p>
+            <p>
+                 <input type="submit">
+            </p>
+        </form>
+      `;
+      let control = ``;
+      const author = ``;
+      const updateCase = new Ready(title, description, control, author);
+      updateCase.makeHtml;
+      updateCase.response;
     });
   } else if (pathname === "/update_process") {
     let body = "";
