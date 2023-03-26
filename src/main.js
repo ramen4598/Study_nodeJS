@@ -6,30 +6,11 @@ const sanitizeHtml = require("sanitize-html");
 const template = require("./lib/template.js");
 const db = require('./lib/db.js');
 
-const app = http.createServer(function (request, response) {
-  const _url = request.url;
-  const queryData = url.parse(_url, true).query;
-  const pathname = url.parse(_url, true).pathname;
-
-  /**디렉터리 안에 파일의 이름을 읽고  html response함.
-   * path, title, decscription, control
-   */
-  function readAndRes(title, description, control, author) {
-    db.query(`SELECT * FROM topic`, function (error, topics) {
-      if (error) {
-        throw error;
-      }
-      let list = template.List(topics);
-      let html = template.HTML(title, list, control, description, author);
-      response.writeHead(200);
-      response.end(html);
-    });
-  }
-  /** new Ready(title, des, control, author)   
-   * 속성 title, description, contol, author, html
-   * method : makeHtml, response
-  */
- class Ready{
+/** new Ready(title, des, control, author)   
+* 속성 title, description, contol, author, html
+* method : makeHtml, response
+*/
+class Ready{
   constructor(title, des, control, author){
     this.title = title;
     this.decscription = des;
@@ -40,11 +21,21 @@ const app = http.createServer(function (request, response) {
   makeHtml() {
     this.html = template.HTML(this);
   }
-  response(){
+  response(response){
     response.writeHead(200);
     response.end(this.html);
   }
- }
+}
+
+console.log('pass Ready');
+
+const app = http.createServer(function (request, response) {
+  const _url = request.url;
+  const queryData = url.parse(_url, true).query;
+  const pathname = url.parse(_url, true).pathname;
+
+  console.log('pass import');
+
 
   if (pathname === "/") {
     if (queryData.id === undefined) {
@@ -56,7 +47,8 @@ const app = http.createServer(function (request, response) {
       const author = '';
       const undefinedCase = new Ready(title, description, control, author);
       undefinedCase.makeHtml;
-      undefinedCase.response;
+      undefinedCase.response(response);
+      console.log('pass undefinedCase');
     } else {
       db.query(
         `SELECT * FROM topic LEFT JOIN author ON topic.author_id= author.id WHERE topic.id=?`,
@@ -79,7 +71,7 @@ const app = http.createServer(function (request, response) {
           const author = `작성자 : ${topic[0].name}`;
           const definedCase = new Ready(title, description, control, author);
           definedCase.makeHtml;
-          definedCase.response;
+          definedCase.response(reponse);
         }
       );
     }
@@ -101,7 +93,7 @@ const app = http.createServer(function (request, response) {
     let author  = '';
     const createCase = new Ready(title, description, control, author);
     createCase.makeHtml;
-    createCase.response;
+    createCase.response(reponse);
   } else if (pathname === "/create_process") {
     let body = "";
     request.on("data", function (data) {
@@ -153,7 +145,7 @@ const app = http.createServer(function (request, response) {
       const author = ``;
       const updateCase = new Ready(title, description, control, author);
       updateCase.makeHtml;
-      updateCase.response;
+      updateCase.response(response);
     });
   } else if (pathname === "/update_process") {
     let body = "";

@@ -1,7 +1,6 @@
 const db = require('./db.js');
 
 module.exports = {
-  // HTML: function (title, list, control, description, author) {
   HTML: function (Ready) {
     const list = this.List();
     return `
@@ -37,12 +36,13 @@ module.exports = {
       </html>
     `;
   },
-  List: function (topics) {
+  List: function () {
     db.query(`SELECT * FROM topic`,(error, topics)=>{
+      if(error){throw error}
       let list = "<ul>";
-      for (let i = 0; i < topics.length; i++) {
-        list += `<li><a href="/?id=${topics[i].id}">${topics[i].title}</a></li>`;
-      }
+      topics.forEach(topic => {
+        list += `<li><a href="/?id=${topic.id}">${topic.title}</a></li>`;
+      });
       list += "</ul>";
       return list;
     });
@@ -55,7 +55,7 @@ module.exports = {
         if (author.id === author_id){
           selected = 'selected';
         }
-        tag += `<option value="${authors[i].id}" ${selected}>${authors[i].name}</option>`;
+        tag += `<option value="${author.id}" ${selected}>${author.name}</option>`;
       });
       return `
         <select name="author">
