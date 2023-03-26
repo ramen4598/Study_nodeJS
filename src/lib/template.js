@@ -46,21 +46,22 @@ module.exports = {
       list += "</ul>";
       return list;
     });
-  },authorSelect:function(authors, author_id){
-    let tag = '';
-    let i = 0;
-    while(i < authors.length){
-      let selected ='';
-      if (authors[i].id === author_id){
-        selected = 'selected';
-      }
-      tag += `<option value="${authors[i].id}" ${selected}>${authors[i].name}</option>`;
-      i++;
-    }
-    return `
-      <select name="author">
-        ${tag}
-      </select>
-    `
+  },authorSelect:function(author_id){
+    db.query(`SELECT * FROM author`,function(error, authors){
+      if(error) throw error;
+      let tag = '';
+      authors.forEach(author => {
+        let selected ='';
+        if (author.id === author_id){
+          selected = 'selected';
+        }
+        tag += `<option value="${authors[i].id}" ${selected}>${authors[i].name}</option>`;
+      });
+      return `
+        <select name="author">
+          ${tag}
+        </select>
+      `
+    });
   }
 };
