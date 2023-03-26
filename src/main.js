@@ -2,20 +2,9 @@ const http = require("http");
 const fs = require("fs");
 const url = require("url");
 const qs = require("querystring");
-const path = require("path");
 const sanitizeHtml = require("sanitize-html");
-
 const template = require("./lib/template.js");
-const dataDir = "/app/src/data";
-const mysql = require("mysql2");
-const db = mysql.createConnection({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  port: process.env.MYSQL_PORT,
-});
-db.connect();
+const db = require('./lib/db.js');
 
 const app = http.createServer(function (request, response) {
   const _url = request.url;
@@ -58,7 +47,7 @@ const app = http.createServer(function (request, response) {
           const description = topic[0].description;
           const id = queryData.id;
           const control = `
-          <input type="button" value="create" onclick="redirect(this, '${id}')"/>
+          <input type="button" value="create" onclick="redirect(this, '')"/>
           <input type="button" value="update" onclick="redirect(this, '${id}')"/>
           <form id="frm" action="delete_process" method="post" style="display:inline">
             <input type="hidden" name="id" value="${id}">

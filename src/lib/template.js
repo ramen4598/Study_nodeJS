@@ -1,3 +1,5 @@
+const db = require('./db.js');
+
 module.exports = {
   HTML: function (title, list, control, description, author) {
     return `
