@@ -1,8 +1,9 @@
 const db = require('./db.js');
 
 module.exports = {
-  HTML: function (Ready) {
-    const list = this.List();
+  HTML: async function (Ready) {
+    const list = await this.List();
+    console.log(list);
     return `
      <!DOCTYPE html>
      <html lang="en">
@@ -36,16 +37,19 @@ module.exports = {
       </html>
     `;
   },
-  List: function () {
-    db.query(`SELECT * FROM topic`,(error, topics)=>{
-      if(error){throw error}
+  List: async function () {
+    try {
+      const promiseDB = db.promise();
+      const [topics, fields] = await promiseDB.query(`SELECT * FROM topic`);
       let list = "<ul>";
       topics.forEach(topic => {
         list += `<li><a href="/?id=${topic.id}">${topic.title}</a></li>`;
       });
       list += "</ul>";
       return list;
-    });
+    } catch (error) {
+      throw error;
+    }
   },authorSelect:function(author_id){
     db.query(`SELECT * FROM author`,function(error, authors){
       if(error) throw error;

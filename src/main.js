@@ -13,13 +13,13 @@ const db = require('./lib/db.js');
 class Ready{
   constructor(title, des, control, author){
     this.title = title;
-    this.decscription = des;
+    this.description = des;
     this.control = control;
     this.author = author;
     this.html = '';
   }
-  makeHtml() {
-    this.html = template.HTML(this);
+  async makeHtml() {
+    this.html = await template.HTML(this);
   }
   response(response){
     response.writeHead(200);
@@ -27,15 +27,10 @@ class Ready{
   }
 }
 
-console.log('pass Ready');
-
 const app = http.createServer(function (request, response) {
   const _url = request.url;
   const queryData = url.parse(_url, true).query;
   const pathname = url.parse(_url, true).pathname;
-
-  console.log('pass import');
-
 
   if (pathname === "/") {
     if (queryData.id === undefined) {
@@ -46,9 +41,8 @@ const app = http.createServer(function (request, response) {
       `;
       const author = '';
       const undefinedCase = new Ready(title, description, control, author);
-      undefinedCase.makeHtml;
-      undefinedCase.response(response);
-      console.log('pass undefinedCase');
+      undefinedCase.makeHtml()
+      .then(()=>{undefinedCase.response(response)});
     } else {
       db.query(
         `SELECT * FROM topic LEFT JOIN author ON topic.author_id= author.id WHERE topic.id=?`,
@@ -70,8 +64,8 @@ const app = http.createServer(function (request, response) {
         `;
           const author = `작성자 : ${topic[0].name}`;
           const definedCase = new Ready(title, description, control, author);
-          definedCase.makeHtml;
-          definedCase.response(reponse);
+          definedCase.makeHtml()
+          .then(()=>{definedCase.response(response)});
         }
       );
     }
@@ -92,8 +86,10 @@ const app = http.createServer(function (request, response) {
     let control = '';
     let author  = '';
     const createCase = new Ready(title, description, control, author);
-    createCase.makeHtml;
-    createCase.response(reponse);
+    createCase.makeHtml();
+    createCase.response(response);
+    createCase.makeHtml()
+    .then(()=>{createCase.response(response)});
   } else if (pathname === "/create_process") {
     let body = "";
     request.on("data", function (data) {
@@ -144,8 +140,8 @@ const app = http.createServer(function (request, response) {
       let control = ``;
       const author = ``;
       const updateCase = new Ready(title, description, control, author);
-      updateCase.makeHtml;
-      updateCase.response(response);
+      updateCase.makeHtml()
+      .then(()=>{updateCase.response(response)});
     });
   } else if (pathname === "/update_process") {
     let body = "";
