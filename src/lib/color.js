@@ -14,16 +14,26 @@ var Links = {
     }
   },
 };
+var Lists = {
+  setColor: function (color) {
+    var Lists = document.querySelectorAll("li");
+    for (var i = 0; i < Lists.length; i++) {
+      Lists[i].style.backgroundColor = color;
+    }
+  },
+}
 function nightDayHandler(self) {
   if (self.value === "night") {
     Body.setBackgroundColor("black");
     Body.setColor("white");
     self.value = "day";
     Links.setColor("white");
+    Lists.setColor("black");
   } else {
     Body.setBackgroundColor("white");
     Body.setColor("black");
     self.value = "night";
     Links.setColor("black");
+    Lists.setColor("white");
   }
 }
