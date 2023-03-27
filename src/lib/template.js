@@ -3,7 +3,6 @@ const db = require('./db.js');
 module.exports = {
   HTML: async function (Ready) {
     const list = await this.List();
-    console.log(list);
     return `
      <!DOCTYPE html>
      <html lang="en">
@@ -19,7 +18,7 @@ module.exports = {
        <body>
          <div id="top">
            <h1><a href="/">Board</a></h1>
-           <input type="button" value="night" onclick="nightDayHandler(Ready)"/> </div>
+           <input type="button" value="night" onclick="nightDayHandler(this)"/> </div>
          <div id="grid">
           ${list}
           <div id="article">
@@ -50,9 +49,10 @@ module.exports = {
     } catch (error) {
       throw error;
     }
-  },authorSelect:function(author_id){
-    db.query(`SELECT * FROM author`,function(error, authors){
-      if(error) throw error;
+  },authorSelect: async function(author_id){
+    try {
+      const promiseDB = db.promise();
+      const [authors, fields] = await promiseDB.query(`SELECT * FROM author`);
       let tag = '';
       authors.forEach(author => {
         let selected ='';
@@ -66,6 +66,8 @@ module.exports = {
           ${tag}
         </select>
       `
-    });
+    }catch(error){
+     throw error;
+    }
   }
 };
