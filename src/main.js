@@ -1,10 +1,22 @@
 require('dotenv').config();
-const http = require("http");
-const url = require("url");
+var express = require('express')
+var app = express()
 const topic = require("./lib/topic.js");
-
+const etc = require("./lib/etc.js");
 module.exports.mainPath = __dirname;
 
+app.get('/', (request, response) => {
+  topic.home(request, response);
+});
+
+app.get('/page/:pageId', (request, response) => {
+  topic.page(request, response);
+});
+
+app.use('/etc', etc);
+
+app.listen(3000);
+/*
 const app = http.createServer(function (request, response) {
   const _url = request.url;
   const queryData = url.parse(_url, true).query;
@@ -31,3 +43,4 @@ const app = http.createServer(function (request, response) {
   }
 });
 app.listen(3000);
+*/

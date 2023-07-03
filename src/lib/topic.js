@@ -1,10 +1,8 @@
-const fs = require("fs");
 const url = require("url");
 const qs = require("querystring");
 const sanitizeHtml = require("sanitize-html");
 const template = require("./template.js");
 const db = require('./db.js');
-const main = require('../main.js');
 
 /** new Ready(title, des, control, author)   
 * 속성 title, description, contol, author, html
@@ -22,8 +20,7 @@ class Ready{
     this.html = await template.HTML(this);
   }
   response(response){
-    response.writeHead(200);
-    response.end(this.html);
+    response.status(200).send(this.html);
   }
 }
 
@@ -40,11 +37,10 @@ exports.home = function (request,response) {
 }
 
 exports.page = function (request, response) {
-    const _url = request.url;
-    const queryData = url.parse(_url, true).query;
+  const pageId = request.params.pageId;
     db.query(
       `SELECT * FROM topic LEFT JOIN author ON topic.author_id= author.id WHERE topic.id=?`,
-      [queryData.id],
+      [pageId],
       function (error, topic) {
         if (error) {
           throw error;
@@ -53,9 +49,9 @@ exports.page = function (request, response) {
         const description = topic[0].description;
         const control = `
         <input type="button" value="create" onclick="redirect(this, '')"/>
-        <input type="button" value="update" onclick="redirect(this, '${queryData.id}')"/>
+        <input type="button" value="update" onclick="redirect(this, '${pageId}')"/>
         <form id="frm" action="delete_process" method="post" style="display:inline">
-          <input type="hidden" name="id" value="${queryData.id}">
+          <input type="hidden" name="id" value="${pageId}">
           <input type="button" value="delete" 
           onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
         </form>
@@ -197,29 +193,4 @@ exports.delete_process = function (request, response) {
         response.end();
       });
     });
-}
-
-exports.etc = function (request, response) {
-    const _url = request.url;
-    function resFile(path) {
-      let fileContents = fs.readFileSync(path, "utf-8");
-      response.write(fileContents);
-      response.end();
-    }
-    if (_url == "/style.css") {
-      response.writeHead(200, { "Content-type": "text/css" });
-      const path = `${main.mainPath}/style.css`;
-      resFile(path);
-    } else if (_url == "/lib/color.js") {
-      response.writeHead(200, { "Content-type": "text/js" });
-      const path = `${main.mainPath}/lib/color.js`;
-      resFile(path);
-    } else if (_url == "/lib/crudBtn.js") {
-      response.writeHead(200, { "Content-type": "text/js" });
-      const path = `${main.mainPath}/lib/crudBtn.js`;
-      resFile(path);
-    } else {
-      response.writeHead(404);
-      response.end("Not found");
-    }
 }

@@ -11,9 +11,9 @@ module.exports = {
          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
          <title>WEB - ${Ready.title}</title>
-         <link rel="stylesheet" href="style.css">
-         <script src="./lib/color.js"></script>
-         <script src="./lib/crudBtn.js"></script>
+         <link rel="stylesheet" href="/etc/style.css">
+         <script src="/etc/lib/color.js"></script>
+         <script src="/etc/lib/crudBtn.js"></script>
        </head>
        <body>
          <div id="top">
@@ -42,7 +42,7 @@ module.exports = {
       const [topics, fields] = await promiseDB.query(`SELECT * FROM topic`);
       let list = "<ul>";
       topics.forEach(topic => {
-        list += `<li><a href="/?id=${topic.id}">${topic.title}</a></li>`;
+        list += `<li><a href="/page/${topic.id}">${topic.title}</a></li>`;
       });
       list += "</ul>";
       return list;
