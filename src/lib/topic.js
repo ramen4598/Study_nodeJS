@@ -105,9 +105,7 @@ exports.create_process = function (request, response) {
           if (error) {
             throw error;
           }
-          response.writeHead(302, {
-            Location: encodeURI(`/?id=${result.insertId}`),
-          });
+          response.redirect(`/page/${result.insertId}`);
           response.end();
         }
       );
