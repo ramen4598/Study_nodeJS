@@ -113,13 +113,12 @@ exports.create_process = function (request, response) {
 }
 
 exports.update = async function (request, response) {
-    const _url = request.url;
-    const queryData = url.parse(_url, true).query;
+    const pageId = request.params.pageId;
     try{
         const promiseDB = db.promise();
-        const [topic, fields] = await promiseDB.query(`SELECT * FROM topic WHERE id=?`,[queryData.id]);
+        const [topic, fields] = await promiseDB.query(`SELECT * FROM topic WHERE id=?`,[pageId]);
         const authorSelect = await template.authorSelect(topic[0].author_id);
-        const id = queryData.id;
+        const id = pageId;
         const title = topic[0].title;
         const description = `
           <form action="/update_process" method="post">
@@ -166,9 +165,7 @@ exports.update_process = function (request, response) {
           if (error) {
             throw error;
           }
-          response.writeHead(302, {
-            Location: encodeURI(`/?id=${id}`),
-          });
+          response.redirect(`/page/${id}`);
           response.end();
         }
       );

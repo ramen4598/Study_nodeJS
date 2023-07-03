@@ -19,6 +19,12 @@ app.get('/create', (req,res)=>{
 app.post('/create_process', (req, res)=>{
   topic.create_process(req, res);
 })
+app.get('/update/:pageId', (req, res)=>{
+  topic.update(req,res);
+})
+app.post('/update_process',(req,res)=>{
+  topic.update_process(req, res);
+})
 
 app.use('/etc', etc);
 
