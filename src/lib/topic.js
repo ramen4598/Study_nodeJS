@@ -207,15 +207,15 @@ exports.etc = function (request, response) {
     }
     if (_url == "/style.css") {
       response.writeHead(200, { "Content-type": "text/css" });
-      const path = "/app/src/style.css";
+      const path = "../style.css";
       resFile(path);
     } else if (_url == "/lib/color.js") {
       response.writeHead(200, { "Content-type": "text/js" });
-      const path = "/app/src/lib/color.js";
+      const path = "./color.js";
       resFile(path);
     } else if (_url == "/lib/crudBtn.js") {
       response.writeHead(200, { "Content-type": "text/js" });
-      const path = "/app/src/lib/crudBtn.js";
+      const path = "./crudBtn.js";
       resFile(path);
     } else {
       response.writeHead(404);
