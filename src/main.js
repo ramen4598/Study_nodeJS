@@ -3,6 +3,8 @@ const http = require("http");
 const url = require("url");
 const topic = require("./lib/topic.js");
 
+module.exports.mainPath = __dirname;
+
 const app = http.createServer(function (request, response) {
   const _url = request.url;
   const queryData = url.parse(_url, true).query;

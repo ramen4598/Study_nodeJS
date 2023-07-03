@@ -4,6 +4,7 @@ const qs = require("querystring");
 const sanitizeHtml = require("sanitize-html");
 const template = require("./template.js");
 const db = require('./db.js');
+const main = require('../main.js');
 
 /** new Ready(title, des, control, author)   
 * 속성 title, description, contol, author, html
@@ -207,15 +208,15 @@ exports.etc = function (request, response) {
     }
     if (_url == "/style.css") {
       response.writeHead(200, { "Content-type": "text/css" });
-      const path = "../style.css";
+      const path = `${main.mainPath}/style.css`;
       resFile(path);
     } else if (_url == "/lib/color.js") {
       response.writeHead(200, { "Content-type": "text/js" });
-      const path = "./color.js";
+      const path = `${main.mainPath}/lib/color.js`;
       resFile(path);
     } else if (_url == "/lib/crudBtn.js") {
       response.writeHead(200, { "Content-type": "text/js" });
-      const path = "./crudBtn.js";
+      const path = `${main.mainPath}/lib/crudBtn.js`;
       resFile(path);
     } else {
       response.writeHead(404);
