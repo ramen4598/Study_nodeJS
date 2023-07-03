@@ -106,7 +106,6 @@ exports.create_process = function (request, response) {
             throw error;
           }
           response.redirect(`/page/${result.insertId}`);
-          response.end();
         }
       );
     });
@@ -166,7 +165,6 @@ exports.update_process = function (request, response) {
             throw error;
           }
           response.redirect(`/page/${id}`);
-          response.end();
         }
       );
     });
@@ -185,7 +183,6 @@ exports.delete_process = function (request, response) {
           throw error;
         }
         response.writeHead(302, { Location: `/` });
-        response.end();
       });
     });
 }
