@@ -1,12 +1,11 @@
-const url = require("url");
 const qs = require("querystring");
 const sanitizeHtml = require("sanitize-html");
 const template = require("./template.js");
 const db = require('./db.js');
 
 /** new Ready(title, des, control, author)   
-* 속성 title, description, contol, author, html
-* method : makeHtml, response
+* @value : title, description, contol, author, html
+* @method : makeHtml, response
 */
 class Ready{
   constructor(title, des, control, author){
@@ -50,7 +49,7 @@ exports.page = function (request, response) {
         const control = `
         <input type="button" value="create" onclick="redirect(this, '')"/>
         <input type="button" value="update" onclick="redirect(this, '${pageId}')"/>
-        <form id="frm" action="delete_process" method="post" style="display:inline">
+        <form id="frm" action="/delete_process" method="post" style="display:inline">
           <input type="hidden" name="id" value="${pageId}">
           <input type="button" value="delete" 
           onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
@@ -182,7 +181,7 @@ exports.delete_process = function (request, response) {
         if (error){
           throw error;
         }
-        response.writeHead(302, { Location: `/` });
+        response.redirect('/');
       });
     });
 }
