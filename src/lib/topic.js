@@ -1,4 +1,3 @@
-const qs = require("querystring");
 const sanitizeHtml = require("sanitize-html");
 const template = require("./template.js");
 const db = require('./db.js');
@@ -86,28 +85,22 @@ exports.create = async function (request, response) {
 }
 
 exports.create_process = function (request, response) {
-    let body = "";
-    request.on("data", function (data) {
-      body += data;
-    });
-    request.on("end", function () {
-      let post = qs.parse(body);
-      let title = post.title;
-      let description = post.description;
-      let sanitizedTitle = sanitizeHtml(title);
-      let sanitizedDesc = sanitizeHtml(description);
-      db.query(
-        `INSERT INTO topic (title, description, created, author_id) 
-        VALUES (?, ?, NOW(), ?)`,
-        [sanitizedTitle, sanitizedDesc, post.author],
-        function (error, result) {
-          if (error) {
-            throw error;
-          }
-          response.redirect(`/page/${result.insertId}`);
-        }
-      );
-    });
+  let post = request.body;
+  let title = post.title;
+  let description = post.description;
+  let sanitizedTitle = sanitizeHtml(title);
+  let sanitizedDesc = sanitizeHtml(description);
+  db.query(
+    `INSERT INTO topic (title, description, created, author_id) 
+    VALUES (?, ?, NOW(), ?)`,
+    [sanitizedTitle, sanitizedDesc, post.author],
+    function (error, result) {
+      if (error) {
+        throw error;
+      }
+      response.redirect(`/page/${result.insertId}`);
+    }
+  );
 }
 
 exports.update = async function (request, response) {
@@ -143,45 +136,33 @@ exports.update = async function (request, response) {
 }
 
 exports.update_process = function (request, response) {
-    let body = "";
-    request.on("data", function (data) {
-      body += data;
-    });
-    request.on("end", function () {
-      let post = qs.parse(body);
-      let id = post.id;
-      let title = post.title;
-      let description = post.description;
-      let sanitizedTitle = sanitizeHtml(title);
-      let sanitizedDesc = sanitizeHtml(description);
-      db.query(
-        `UPDATE topic 
-          SET title=?, description=?, author_id=?
-          WHERE id=?`,
-        [sanitizedTitle, sanitizedDesc, post.author, id],
-        function (error, result) {
-          if (error) {
-            throw error;
-          }
-          response.redirect(`/page/${id}`);
-        }
-      );
-    });
+  let post = request.body;
+  let id = post.id;
+  let title = post.title;
+  let description = post.description;
+  let sanitizedTitle = sanitizeHtml(title);
+  let sanitizedDesc = sanitizeHtml(description);
+  db.query(
+    `UPDATE topic 
+      SET title=?, description=?, author_id=?
+      WHERE id=?`,
+    [sanitizedTitle, sanitizedDesc, post.author, id],
+    function (error, result) {
+      if (error) {
+        throw error;
+      }
+      response.redirect(`/page/${id}`);
+    }
+  );
 }
 
 exports.delete_process = function (request, response) {
-    let body = "";
-    request.on("data", function (data) {
-      body += data;
-    });
-    request.on("end", function () {
-      let post = qs.parse(body);
-      let id = post.id;
-      db.query(`DELETE FROM topic WHERE id=?`,[id],function (error) {
-        if (error){
-          throw error;
-        }
-        response.redirect('/');
-      });
-    });
+  let post = request.body;
+  let id = post.id;
+  db.query(`DELETE FROM topic WHERE id=?`,[id],function (error) {
+    if (error){
+      throw error;
+    }
+    response.redirect('/');
+  });
 }

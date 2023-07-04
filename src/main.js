@@ -1,9 +1,12 @@
 require('dotenv').config();
 var express = require('express')
 var app = express()
+const bodyParser = require('body-parser');
 const topic = require("./lib/topic.js");
 const etc = require("./lib/etc.js");
 module.exports.mainPath = __dirname;
+
+app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/', (req, res) => {
   topic.home(req, res);
