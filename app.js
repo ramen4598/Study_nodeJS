@@ -1,14 +1,13 @@
 require('dotenv').config();
-var express = require('express')
-var app = express()
+var express = require('express');
+var app = express();
 const bodyParser = require('body-parser');
 const compression = require('compression');
 const topic = require("./lib/topic.js");
-const etc = require("./lib/etc.js");
-module.exports.mainPath = __dirname;
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(compression());
+app.use('/static', express.static(__dirname + '/public'));
 
 app.get('/', (req, res) => {
   topic.home(req, res);
@@ -35,6 +34,8 @@ app.post('/delete_process', (req,res)=>{
   topic.delete_process(req, res);
 })
 
-app.use('/etc', etc);
+app.get('*', function(request, response) {
+    response.status(404).send("Not found");
+});
 
 app.listen(3000);
