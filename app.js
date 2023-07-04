@@ -13,8 +13,9 @@ app.use('/static', express.static(__dirname + '/public'));
 app.use('/', indexRouter);
 app.use('/topic', topicRouter);
 
-app.get('*', function(request, response) {
-    response.status(404).send("Not found");
+app.use((err, req, res, next)=>{ 
+	console.error(err.stack);
+    res.status(500).send("Something is wrong!");
 });
 
 app.listen(3000);

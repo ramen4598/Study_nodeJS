@@ -4,47 +4,28 @@ const sanitizeHtml = require("sanitize-html");
 const template = require("../lib/template.js");
 const db = require('../lib/db.js');
 
-class Ready{
-  constructor(title, des, control, author){
-    this.title = title;
-    this.description = des;
-    this.control = control;
-    this.author = author;
-    this.html = '';
-  }
-  async makeHtml() {
-    this.html = await template.HTML(this);
-  }
-  response(res){
-    res.status(200).send(this.html);
-  }
-}
-
 router.route('/create')
-  .get( async(req,res,next)=>{
-    req.author = await template.authorSelect('');
+  .get((req,res,next)=>{
+    req.author_id = ''; 
     next();
-  },(req,res,next)=>{
-    let authorSelect = req.author;
-    let title = "create";
-    let description = `
-        <form action="/topic/create" method="post">
-            <p>${authorSelect}</p>
-            <p><input type="text" name="title" placeholder="title"></p>
-            <p>
-                <textarea name="description" placeholder="description"></textarea>
-            </p>
-            <p>
-                <input type="submit">
-            </p>
-        </form>
-      `;
-    let control = '';
-    let author  = '';
-    const createCase = new Ready(title, description, control, author);
-    createCase.makeHtml()
-    .then(()=>{createCase.response(res)});
-  })
+  },template.List,template.authorSelect,(req,res,next)=>{
+    req.title = "create";
+    req.desc = `
+      <form action="/topic/create" method="post">
+          <p>${req.authorSelect}</p>
+          <p><input type="text" name="title" placeholder="title"></p>
+          <p>
+              <textarea name="description" placeholder="description"></textarea>
+          </p>
+          <p>
+              <input type="submit">
+          </p>
+      </form>
+    `;
+    req.control = '';
+    req.author  = '';
+    next();
+  },template.HTML)
   .post((req,res,next)=>{
     let post = req.body;
     let title = post.title;
@@ -55,8 +36,8 @@ router.route('/create')
       `INSERT INTO topic (title, description, created, author_id) 
       VALUES (?, ?, NOW(), ?)`,
       [sanitizedTitle, sanitizedDesc, post.author],
-      function (error, result) {
-        if (error) {
+      function (err, result) {
+        if (err) {
           return next(err);
         }
         res.redirect(`/topic/${result.insertId}`);
@@ -70,23 +51,20 @@ router.get('/update/:pageId', async(req,res,next)=>{
     const promiseDB = db.promise();
     const [topic, fields] = await promiseDB.query(`SELECT * FROM topic WHERE id=?`,[pageId]);
     req.topic = topic;
-    req.author = await template.authorSelect(topic[0].author_id);
+    req.author_id = topic[0].author_id;
     next();
-  }catch(error){
+  }catch(err){
     return next(err);
   }
-},(req,res,next)=>{
-  const pageId = req.params.pageId;
+},template.List,template.authorSelect,(req,res,next)=>{
   const topic = req.topic;
-  const authorSelect = req.author;
-  const id = pageId;
-  const title = topic[0].title;
-  const description = `
+  req.title = topic[0].title;
+  req.desc = `
     <form action="/topic/update" method="post">
-        <p>${authorSelect}</p>
+        <p>${req.authorSelect}</p>
         <p>
-        <input type="hidden" name="id" value="${id}">
-        <input type="text" name="title" placeholder="title" value="${title}"> </p>
+        <input type="hidden" name="id" value="${req.params.pageId}">
+        <input type="text" name="title" placeholder="title" value="${topic[0].title}"> </p>
         <p>
               <textarea name="description" placeholder="description">${topic[0].description}</textarea>
         </p>
@@ -95,39 +73,33 @@ router.get('/update/:pageId', async(req,res,next)=>{
         </p>
     </form>
   `;
-  let control = ``;
-  const author = ``;
-  const updateCase = new Ready(title, description, control, author);
-  updateCase.makeHtml()
-  .then(()=>{updateCase.response(res)});
-});
+  req.control = ``;
+  req.author = ``;
+  next();
+},template.HTML);
 
 router.post('/update',(req,res,next)=>{
   let post = req.body;
-  let id = post.id;
-  let title = post.title;
-  let description = post.description;
-  let sanitizedTitle = sanitizeHtml(title);
-  let sanitizedDesc = sanitizeHtml(description);
+  let sanitizedTitle = sanitizeHtml(post.title);
+  let sanitizedDesc = sanitizeHtml(post.description);
   db.query(
     `UPDATE topic 
       SET title=?, description=?, author_id=?
       WHERE id=?`,
-    [sanitizedTitle, sanitizedDesc, post.author, id],
-    function (error, result) {
-      if (error) {
+    [sanitizedTitle, sanitizedDesc, post.author, post.id],
+    function (err, result) {
+      if (err) {
         return next(err);
       }
-      res.redirect(`/topic/${id}`);
+      res.redirect(`/topic/${post.id}`);
     }
   );
 });
 
 router.post('/delete', (req,res,next)=>{
   let post = req.body;
-  let id = post.id;
-  db.query(`DELETE FROM topic WHERE id=?`,[id],function (error) {
-    if (error){
+  db.query(`DELETE FROM topic WHERE id=?`,[post.id],function (err) {
+    if (err){
       return next(err);
     }
     res.redirect('/');
@@ -135,24 +107,23 @@ router.post('/delete', (req,res,next)=>{
 });
 
 router.get('/:pageId', (req, res, next)=>{
-  const pageId = req.params.pageId;
   db.query(
     `SELECT * FROM topic LEFT JOIN author ON topic.author_id= author.id WHERE topic.id=?`,
-    [pageId],
-    function (error, topic) {
-      if (error) {
+    [req.params.pageId],
+    function (err, topic) {
+      if (err) {
         return next(err);
       }
       req.topic = topic;
       next();
     }
   );
-  },(req, res)=>{
+},template.List,(req,res,next)=>{
     const pageId = req.params.pageId;
     const topic = req.topic;
-    const title = topic[0].title;
-    const description = topic[0].description;
-    const control = `
+    req.title = topic[0].title;
+    req.desc = topic[0].description;
+    req.control = `
     <input type="button" value="create" onclick="redirect(this, '')"/>
     <input type="button" value="update" onclick="redirect(this, '${pageId}')"/>
     <form id="frm" action="/topic/delete" method="post" style="display:inline">
@@ -161,11 +132,8 @@ router.get('/:pageId', (req, res, next)=>{
       onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
     </form>
     `;
-    const author = `${topic[0].name} 작성`;
-    const definedCase = new Ready(title, description, control, author);
-    definedCase.makeHtml()
-    .then(()=>{definedCase.response(res)});
-  }
-);
+    req.author = `${topic[0].name} 작성`;
+    next();
+  },template.HTML);
 
 module.exports = router;
