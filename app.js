@@ -3,36 +3,15 @@ var express = require('express');
 var app = express();
 const bodyParser = require('body-parser');
 const compression = require('compression');
-const topic = require("./lib/topic.js");
+const topicRouter = require("./routes/topic.js");
+const indexRouter = require('./routes/index.js');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(compression());
+
 app.use('/static', express.static(__dirname + '/public'));
-
-app.get('/', (req, res) => {
-  topic.home(req, res);
-});
-app.get('/page/:pageId', (req, res) => {
-  topic.page(req, res);
-});
-
-app.get('/create', (req,res)=>{
-  topic.create(req, res);
-})
-app.post('/create_process', (req, res)=>{
-  topic.create_process(req, res);
-})
-
-app.get('/update/:pageId', (req, res)=>{
-  topic.update(req,res);
-})
-app.post('/update_process',(req,res)=>{
-  topic.update_process(req, res);
-})
-
-app.post('/delete_process', (req,res)=>{
-  topic.delete_process(req, res);
-})
+app.use('/', indexRouter);
+app.use('/topic', topicRouter);
 
 app.get('*', function(request, response) {
     response.status(404).send("Not found");
