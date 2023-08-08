@@ -3,6 +3,8 @@ var express = require('express');
 var app = express();
 const bodyParser = require('body-parser');
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
+const checkCookie = require('./lib/checkCookie.js');
 const topicRouter = require("./routes/topic.js");
 const indexRouter = require('./routes/index.js');
 const helmet = require('helmet');
@@ -10,6 +12,8 @@ const helmet = require('helmet');
 // app.use(helmet());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(compression());
+app.use(cookieParser());
+app.get('*', checkCookie.checkDarkMode);
 
 app.use('/static', express.static(__dirname + '/public'));
 app.use('/', indexRouter);
