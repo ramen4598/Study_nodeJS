@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const checkCookie = require('./lib/checkCookie.js');
 const topicRouter = require("./routes/topic.js");
 const indexRouter = require('./routes/index.js');
+const authRouter = require('./routes/auth.js');
 const helmet = require('helmet');
 
 // app.use(helmet());
@@ -18,6 +19,7 @@ app.get('*', checkCookie.checkDarkMode);
 app.use('/static', express.static(__dirname + '/public'));
 app.use('/', indexRouter);
 app.use('/topic', topicRouter);
+app.use('/auth', authRouter);
 
 app.use((err, req, res, next)=>{ 
 	console.error(err.stack);
