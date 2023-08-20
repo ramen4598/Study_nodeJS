@@ -39,9 +39,11 @@ router.route('/login')
     let email = post.email;
     let password = post.pwd;
     if(email == authData.email && password == authData.password){
-        res.send(`<script>window.alert("삑! 환영합니다.");window.location.href = '/';</script>`);
+      req.session.is_logined = true;
+      req.session.nickname = authData.nickname;
+      res.send(`<script>window.alert("삑! ${authData.nickname}님 환영합니다.");window.location.href = '/';</script>`);
     }else{
-        res.send(`<script>window.alert("삐빅! 틀렸습니다. 다시 시도하세요");window.location.href = '/auth/login';</script>`);
+      res.send(`<script>window.alert("삐빅! 틀렸습니다. 다시 시도하세요");window.location.href = '/auth/login';</script>`);
     }
   });
 
