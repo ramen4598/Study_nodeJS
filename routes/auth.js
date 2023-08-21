@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const template = require("../lib/template.js");
+const auth = require('../lib/auth');
 
 const authData = {
     email: 'email',
@@ -9,7 +10,7 @@ const authData = {
 }
 
 router.route('/login')
-  .get(template.List,(req,res,next)=>{
+  .get(auth.statusUI, template.List,(req,res,next)=>{
     req.title = "login";
     req.desc = `
       <form action="/auth/login" method="post">

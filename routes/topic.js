@@ -27,7 +27,7 @@ router.route('/create')
     req.author  = '';
     next();
   },template.HTML)
-  .post((req,res,next)=>{
+  .post(auth.checkLogin, (req,res,next)=>{
     let post = req.body;
     let title = post.title;
     let description = post.description;
@@ -79,7 +79,7 @@ router.get('/update/:pageId', async(req,res,next)=>{
   next();
 },template.HTML);
 
-router.post('/update',(req,res,next)=>{
+router.post('/update',auth.checkLogin, (req,res,next)=>{
   let post = req.body;
   let sanitizedTitle = sanitizeHtml(post.title);
   let sanitizedDesc = sanitizeHtml(post.description);
@@ -97,7 +97,7 @@ router.post('/update',(req,res,next)=>{
   );
 });
 
-router.post('/delete', (req,res,next)=>{
+router.post('/delete', auth.checkLogin, (req,res,next)=>{
   let post = req.body;
   db.query(`DELETE FROM topic WHERE id=?`,[post.id],function (err) {
     if (err){
@@ -124,15 +124,18 @@ router.get('/:pageId', (req, res, next)=>{
     const topic = req.topic;
     req.title = topic[0].title;
     req.desc = topic[0].description;
-    req.control = `
-    <input type="button" value="create" onclick="redirect(this, '')"/>
-    <input type="button" value="update" onclick="redirect(this, '${pageId}')"/>
-    <form id="frm" action="/topic/delete" method="post" style="display:inline">
-      <input type="hidden" name="id" value="${pageId}">
-      <input type="button" value="delete" 
-      onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
-    </form>
-    `;
+    req.control = '';
+    if(req.session.is_logined){
+      req.control = `
+      <input type="button" value="create" onclick="redirect(this, '')"/>
+      <input type="button" value="update" onclick="redirect(this, '${pageId}')"/>
+      <form id="frm" action="/topic/delete" method="post" style="display:inline">
+        <input type="hidden" name="id" value="${pageId}">
+        <input type="button" value="delete" 
+        onclick="if(confirm('really delete?')==true){document.getElementById('frm').submit();}">
+      </form>
+      `;
+    } 
     req.author = `${topic[0].name} 작성`;
     next();
   },template.HTML);
