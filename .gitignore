@@ -1,9 +1,11 @@
 node_modules
 
-src/data/*
+.env
 
 !src/data/.gitkeep
 
 .DS_Store
 
 .vscode
+
+db_data
