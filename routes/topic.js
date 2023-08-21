@@ -3,12 +3,13 @@ const router = express.Router();
 const sanitizeHtml = require("sanitize-html");
 const template = require("../lib/template.js");
 const db = require('../lib/db.js');
+const auth = require('../lib/auth');
 
 router.route('/create')
   .get((req,res,next)=>{
     req.author_id = ''; 
     next();
-  },template.List,template.authorSelect,(req,res,next)=>{
+  },auth.statusUI,template.List,template.authorSelect,(req,res,next)=>{
     req.title = "create";
     req.desc = `
       <form action="/topic/create" method="post">
@@ -56,7 +57,7 @@ router.get('/update/:pageId', async(req,res,next)=>{
   }catch(err){
     return next(err);
   }
-},template.List,template.authorSelect,(req,res,next)=>{
+},auth.statusUI,template.List,template.authorSelect,(req,res,next)=>{
   const topic = req.topic;
   req.title = topic[0].title;
   req.desc = `
@@ -118,7 +119,7 @@ router.get('/:pageId', (req, res, next)=>{
       next();
     }
   );
-},template.List,(req,res,next)=>{
+},auth.statusUI,template.List,(req,res,next)=>{
     const pageId = req.params.pageId;
     const topic = req.topic;
     req.title = topic[0].title;

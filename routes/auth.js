@@ -47,4 +47,11 @@ router.route('/login')
     }
   });
 
+router.get('/logout', (req, res, next)=>{
+  req.session.destroy((err)=>{
+    if(err) console.log(err);
+    res.redirect('/');
+  });
+})
+
 module.exports = router;

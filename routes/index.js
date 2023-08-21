@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const template = require("../lib/template.js");
+const auth = require('../lib/auth')
 
 router.get('/', (req,res,next)=>{
   req.title = "Welcome :)";
@@ -10,6 +11,6 @@ router.get('/', (req,res,next)=>{
   `;
   req.author = '';
   next();
-},[template.List,template.HTML]);
+},[auth.statusUI,template.List,template.HTML]);
 
 module.exports = router;
