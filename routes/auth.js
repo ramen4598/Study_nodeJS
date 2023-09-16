@@ -2,17 +2,18 @@ const express = require('express');
 const router = express.Router();
 const template = require("../lib/template.js");
 const auth = require('../lib/auth');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 
 const authData = {
-    email: 'email',
-    password: 'password',
-    nickname: 'tiredI'
+  email: 'email',
+  password: 'password',
+  nickname: 'tiredI'
 }
 
-router.route('/login')
-  .get(auth.statusUI, template.List,(req,res,next)=>{
-    req.title = "login";
-    req.desc = `
+router.get('/login', auth.statusUI, template.List, (req, res, next) => {
+  req.title = "login";
+  req.desc = `
       <form action="/auth/login" method="post">
         <p>
             <div>
@@ -31,11 +32,13 @@ router.route('/login')
         <input type="submit" value="login">
       </form>
     `;
-    req.control = '';
-    req.author  = '';
-    next();
-  },template.HTML)
-  .post((req,res,next)=>{
+  req.control = '';
+  req.author = '';
+  next();
+}, template.HTML);
+
+/*
+router.post('/login', (req,res,next)=>{
     let post = req.body;
     let email = post.email;
     let password = post.pwd;
@@ -50,13 +53,20 @@ router.route('/login')
     }else{
       res.send(`<script>window.alert("삐빅! 틀렸습니다. 다시 시도하세요");window.location.href = '/auth/login';</script>`);
     }
-  });
+});
+*/
+router.post('/login',
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/login'
+  })
+);
 
-router.get('/logout', (req, res, next)=>{
-  req.session.destroy((err)=>{
-    if(err) console.log(err);
+router.get('/logout', (req, res, next) => {
+  req.session.destroy((err) => {
+    if (err) console.log(err);
     res.redirect('/');
   });
-})
+});
 
 module.exports = router;
