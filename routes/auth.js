@@ -6,21 +6,21 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
 passport.use(new LocalStrategy({
-    usernameField: 'email',
-    passwordField: 'pwd'
-  },
-  (email, password, done)=>{
-    if(email == null || email != authData){
+  usernameField: 'email',
+  passwordField: 'pwd'
+},
+  (email, password, done) => {
+    if (email == null || email != authData) {
       return done(null, false, {
         message: "삐삑! 잘못된 이메일입니다. 다시 시도하세요"
       });
     }
-    if(password == null || password != authData.password){
+    if (password == null || password != authData.password) {
       return done(null, false, {
-        message: "비삑! 잘못된 이메일입니다 다시 시도하세요"
+        message: "비삑! 잘못된 패스워드입니다 다시 시도하세요"
       });
     }
-    return done(null, authData,{
+    return done(null, authData, {
       message: "삑! ${authData.nickname}님 환영합니다."
     });
   }
