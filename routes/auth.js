@@ -5,6 +5,27 @@ const auth = require('../lib/auth');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'pwd'
+  },
+  (email, password, done)=>{
+    if(email == null || email != authData){
+      return done(null, false, {
+        message: "삐삑! 잘못된 이메일입니다. 다시 시도하세요"
+      });
+    }
+    if(password == null || password != authData.password){
+      return done(null, false, {
+        message: "비삑! 잘못된 이메일입니다 다시 시도하세요"
+      });
+    }
+    return done(null, authData,{
+      message: "삑! ${authData.nickname}님 환영합니다."
+    });
+  }
+));
+
 const authData = {
   email: 'email',
   password: 'password',
@@ -37,24 +58,6 @@ router.get('/login', auth.statusUI, template.List, (req, res, next) => {
   next();
 }, template.HTML);
 
-/*
-router.post('/login', (req,res,next)=>{
-    let post = req.body;
-    let email = post.email;
-    let password = post.pwd;
-    if(email == authData.email && password == authData.password){
-      req.session.is_logined = true;
-      req.session.nickname = authData.nickname;
-      req.session.save((err)=>{
-        if(err) console.log(err);
-        //res.redirect('/');
-        res.send(`<script>window.alert("삑! ${authData.nickname}님 환영합니다.");window.location.href = '/';</script>`);
-      });
-    }else{
-      res.send(`<script>window.alert("삐빅! 틀렸습니다. 다시 시도하세요");window.location.href = '/auth/login';</script>`);
-    }
-});
-*/
 router.post('/login',
   passport.authenticate('local', {
     successRedirect: '/',
